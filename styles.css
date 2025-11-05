@@ -16,6 +16,43 @@ img {
   display: inline-block;
 }
 
+/* 整頁Loading效果 */
+#page-loading {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(25, 15, 44, 0.95);
+  backdrop-filter: blur(10px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  transition: opacity 0.3s ease;
+}
+
+.loading-spinner {
+  text-align: center;
+  color: white;
+}
+
+.loading-spinner .spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top: 4px solid #fff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin: 0 auto 20px;
+}
+
+.loading-spinner p {
+  font-size: 16px;
+  color: rgba(255, 255, 255, 0.8);
+  animation: pulse 1.5s ease-in-out infinite alternate;
+}
+
 /* Main CSS */
 .grid-wrapper > div {
   display: flex;
@@ -25,36 +62,53 @@ img {
   position: relative;
   color: white;
   overflow: hidden;
-  transition: transform 0.3s ease;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
 /* 載入狀態 */
 .grid-wrapper > div.loading {
-  background: linear-gradient(45deg, #f0f0f0, #e0e0e0);
-  animation: shimmer 1.5s infinite;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s infinite;
+  min-height: 200px;
 }
 
-.grid-wrapper > div.loading::after {
+.grid-wrapper > div.loading::before {
   content: "";
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  width: 20px;
-  height: 20px;
-  border: 2px solid #ccc;
-  border-top: 2px solid #666;
+  width: 30px;
+  height: 30px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top: 3px solid rgba(255, 255, 255, 0.8);
   border-radius: 50%;
   animation: spin 1s linear infinite;
+}
+
+.grid-wrapper > div.loading img {
+  opacity: 0;
 }
 
 .grid-wrapper > div.loaded {
   animation: fadeInUp 0.6s ease-out;
 }
 
+.grid-wrapper > div.loaded img {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
 .grid-wrapper > div.error {
-  background: #ffebee;
-  color: #c62828;
+  background: rgba(255, 82, 82, 0.2);
+  color: #ff5252;
+  border: 2px dashed rgba(255, 82, 82, 0.5);
 }
 
 .grid-wrapper > div.error::after {
@@ -63,7 +117,11 @@ img {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 12px;
+  font-size: 14px;
+  color: rgba(255, 82, 82, 0.9);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 8px 12px;
+  border-radius: 4px;
 }
 
 /* 圖片樣式 */
@@ -80,10 +138,10 @@ img {
 /* 動畫效果 */
 @keyframes shimmer {
   0% {
-    background-position: -200px 0;
+    background-position: -200% 0;
   }
   100% {
-    background-position: calc(200px + 100%) 0;
+    background-position: 200% 0;
   }
 }
 
@@ -93,6 +151,15 @@ img {
   }
   100% {
     transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 1;
   }
 }
 
