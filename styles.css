@@ -124,7 +124,23 @@ img {
   opacity: 1;
 }
 
+/* 批次顯示動畫 */
+.batch-reveal {
+  animation: batchFadeIn 0.6s ease-out;
+}
+
 /* 動畫效果 */
+@keyframes batchFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 @keyframes shimmer {
   0% {
     background-position: -200% 0;
