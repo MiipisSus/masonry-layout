@@ -1,11 +1,9 @@
-/* Reset CSS */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* CSS變數定義 */
 :root {
   --sidebar-width: clamp(200px, 20%, 300px);
   --avatar-size: clamp(100px, 50%, 150px);
@@ -25,14 +23,12 @@ img {
   display: inline-block;
 }
 
-/* 側邊欄樣式 */
 .side-bar {
   position: fixed;
   top: 0;
   left: 0;
   width: var(--sidebar-width);
   height: 100vh;
-  /* backdrop-filter: blur(15px); */
   z-index: 100;
   padding: var(--sidebar-padding);
 }
@@ -58,14 +54,12 @@ img {
   object-fit: cover;
 }
 
-/* 主要內容區域 */
 .main-content {
   margin-left: var(--sidebar-width);
   padding: 15px;
   min-height: 100vh;
 }
 
-/* 整頁Loading效果 */
 #page-loading {
   position: fixed;
   top: 0;
@@ -96,7 +90,6 @@ img {
   margin: 0 auto;
 }
 
-/* 批次載入指示器 */
 #batch-loading {
   display: flex;
   align-items: center;
@@ -116,7 +109,6 @@ img {
 }
 
 .batch-loading-spinner {
-  /* margin-left: auto; */
   gap: 10px;
   color: white;
 }
@@ -130,7 +122,6 @@ img {
   animation: spin 1s linear infinite;
 }
 
-/* Main CSS */
 .grid-wrapper > div {
   display: flex;
   flex-direction: column;
@@ -140,9 +131,9 @@ img {
   color: white;
   overflow: hidden;
   transition: transform 0.3s ease, opacity 0.3s ease;
+  border-radius: 5px;
 }
 
-/* 載入狀態 */
 .grid-wrapper > div.loading {
   background: linear-gradient(
     90deg,
@@ -196,7 +187,6 @@ img {
   border-radius: 4px;
 }
 
-/* 圖片樣式 */
 .lazy-img {
   opacity: 0;
   transition: opacity 0.3s ease;
@@ -206,13 +196,10 @@ img {
 .lazy-img.loaded {
   opacity: 1;
 }
-
-/* 批次顯示動畫 */
 .batch-reveal {
   animation: batchFadeIn 0.6s ease-out;
 }
 
-/* 動畫效果 */
 @keyframes batchFadeIn {
   from {
     opacity: 0;
@@ -276,6 +263,8 @@ img {
   height: 100%;
   object-fit: cover;
   border-radius: 5px;
+  transform-origin: center;
+  will-change: transform;
 }
 
 .grid-wrapper > div h3 {
@@ -285,6 +274,7 @@ img {
 
   font-size: 1.5rem;
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+  opacity: 0;
 }
 
 .grid-wrapper > div .interact-btn {
@@ -293,6 +283,7 @@ img {
   left: 10px;
 
   font-size: 1.2rem;
+  opacity: 0;
 }
 
 .grid-wrapper {
@@ -313,7 +304,6 @@ img {
   grid-row: span 2;
 }
 
-/* 響應式設計 */
 @media (max-width: 768px) {
   :root {
     --sidebar-width: 60px;
