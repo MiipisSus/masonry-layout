@@ -239,11 +239,18 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   function setupHoverEffectForContainer(container) {
-    const img = container.querySelector("img");
-    const interactBtn = container.querySelector(".interact-btn");
-    const title = container.querySelector("h3");
+    const imageContainer = container.querySelector(".image-container");
+    const img = imageContainer
+      ? imageContainer.querySelector("img")
+      : container.querySelector("img");
+    const interactBtn = imageContainer
+      ? imageContainer.querySelector(".interact-btn")
+      : container.querySelector(".interact-btn");
+    const title = imageContainer
+      ? imageContainer.querySelector("h3")
+      : container.querySelector("h3");
 
-    if (img) {
+    if (img && imageContainer) {
       container.removeEventListener("mouseenter", container._mouseenterHandler);
       container.removeEventListener("mouseleave", container._mouseleaveHandler);
 
