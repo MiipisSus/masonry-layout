@@ -1,47 +1,93 @@
-// 圖片尺寸分類腳本
+// 圖片尺寸分類腳本 - 漸進式載入版本
 document.addEventListener("DOMContentLoaded", function () {
+  // 配置參數
+  const INITIAL_LOAD_COUNT = 20; // 初始載入圖片數量
+  const SCROLL_THRESHOLD = 300; // 滾動觸發閾值（像素）
+
   // 顯示整頁loading效果
   showPageLoading();
 
   // 取得所有包含圖片的 div 容器
   const imageContainers = document.querySelectorAll(".grid-wrapper > div");
-  let processedCount = 0;
-  const totalImages = imageContainers.length;
+  let loadedCount = 0;
+  let currentLoadIndex = 0;
 
+  // 初始化容器狀態
   imageContainers.forEach((container, index) => {
     const img = container.querySelector("img");
-
     if (img) {
-      // 清除所有現有的 class 並添加loading狀態
-      container.className = "loading";
-
-      // 等待圖片載入完成
-      if (img.complete) {
-        classifyImage(img, container);
-        processedCount++;
-        checkAllImagesProcessed();
-      } else {
-        img.onload = function () {
-          classifyImage(img, container);
-          processedCount++;
-          checkAllImagesProcessed();
-        };
-
-        img.onerror = function () {
-          container.className = "error";
-          processedCount++;
-          checkAllImagesProcessed();
-        };
-      }
-    } else {
-      processedCount++;
-      checkAllImagesProcessed();
+      // 儲存原始 src，並清空 src 以防止自動載入
+      img.dataset.src = img.src;
+      img.src = "";
+      container.className = index < INITIAL_LOAD_COUNT ? "loading" : "pending";
     }
   });
 
-  // 檢查所有圖片是否處理完成
-  function checkAllImagesProcessed() {
-    if (processedCount >= totalImages) {
+  // 載入前20個圖片
+  loadNextBatch(INITIAL_LOAD_COUNT);
+
+  // 設置滾動監聽器
+  let scrollTimeout;
+  window.addEventListener("scroll", function () {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(handleScroll, 100);
+  });
+
+  // 處理滾動事件
+  function handleScroll() {
+    const scrollPosition = window.scrollY + window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
+
+    // 當滾動到接近底部時載入更多圖片
+    if (
+      scrollPosition >= documentHeight - SCROLL_THRESHOLD &&
+      currentLoadIndex < imageContainers.length
+    ) {
+      loadNextBatch(Math.min(10, imageContainers.length - currentLoadIndex)); // 每次載入10張
+    }
+  }
+
+  // 載入下一批圖片
+  function loadNextBatch(count) {
+    const endIndex = Math.min(currentLoadIndex + count, imageContainers.length);
+
+    for (let i = currentLoadIndex; i < endIndex; i++) {
+      loadImage(imageContainers[i], i);
+    }
+
+    currentLoadIndex = endIndex;
+  }
+
+  // 載入單張圖片
+  function loadImage(container, index) {
+    const img = container.querySelector("img");
+
+    if (img && img.dataset.src) {
+      container.className = "loading";
+
+      // 建立新的圖片物件來預載入
+      const tempImg = new Image();
+
+      tempImg.onload = function () {
+        img.src = img.dataset.src;
+        classifyImage(tempImg, container);
+        loadedCount++;
+        checkInitialLoadComplete();
+      };
+
+      tempImg.onerror = function () {
+        container.className = "error";
+        loadedCount++;
+        checkInitialLoadComplete();
+      };
+
+      tempImg.src = img.dataset.src;
+    }
+  }
+
+  // 檢查初始載入是否完成
+  function checkInitialLoadComplete() {
+    if (loadedCount >= Math.min(INITIAL_LOAD_COUNT, imageContainers.length)) {
       hidePageLoading();
     }
   }
@@ -109,8 +155,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const newDiv = document.createElement("div");
     const newImg = document.createElement("img");
 
-    newDiv.className = "loading";
-    newImg.src = imageSrc;
+    newDiv.className = "pending";
+    newImg.dataset.src = imageSrc;
+    newImg.src = "";
     newImg.alt = "";
     newDiv.appendChild(newImg);
 
@@ -120,14 +167,8 @@ document.addEventListener("DOMContentLoaded", function () {
       document.querySelector(".grid-wrapper").appendChild(newDiv);
     }
 
-    // 為新圖片分類
-    newImg.onload = function () {
-      classifyImage(newImg, newDiv);
-    };
-
-    newImg.onerror = function () {
-      newDiv.className = "error";
-    };
+    // 立即載入新圖片
+    loadImage(newDiv, -1);
 
     return newDiv;
   };
@@ -136,11 +177,8 @@ document.addEventListener("DOMContentLoaded", function () {
   window.reclassifyAllImages = function () {
     const containers = document.querySelectorAll(".grid-wrapper > div");
     containers.forEach((container) => {
-      // 清除現有的尺寸相關 class，設置為loading狀態
-      container.className = "loading";
-
       const img = container.querySelector("img");
-      if (img && img.complete) {
+      if (img && img.src && img.complete) {
         classifyImage(img, container);
       }
     });

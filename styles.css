@@ -44,13 +44,7 @@ img {
   border-top: 4px solid #fff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
-}
-
-.loading-spinner p {
-  font-size: 16px;
-  color: rgba(255, 255, 255, 0.8);
-  animation: pulse 1.5s ease-in-out infinite alternate;
+  margin: 0 auto;
 }
 
 /* Main CSS */
@@ -78,6 +72,28 @@ img {
   min-height: 200px;
 }
 
+/* 等待載入狀態 */
+.grid-wrapper > div.pending {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px dashed rgba(255, 255, 255, 0.2);
+  min-height: 200px;
+  opacity: 0.6;
+}
+
+.grid-wrapper > div.pending::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
 .grid-wrapper > div.loading::before {
   content: "";
   position: absolute;
@@ -92,7 +108,8 @@ img {
   animation: spin 1s linear infinite;
 }
 
-.grid-wrapper > div.loading img {
+.grid-wrapper > div.loading img,
+.grid-wrapper > div.pending img {
   opacity: 0;
 }
 
