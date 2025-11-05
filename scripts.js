@@ -110,7 +110,6 @@ document.addEventListener("DOMContentLoaded", function () {
       setTimeout(() => {
         container.style.display = "flex";
         container.classList.add("batch-reveal");
-        // 為新顯示的容器設置hover效果
         setupHoverEffectForContainer(container);
       }, index * 50);
     });
@@ -171,23 +170,22 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let imageType = "";
 
-    const WIDE_RATIO = 1.5;
-    const TALL_RATIO = 0.75;
-    const BIG_SIZE = 1200;
+    const WIDE_THRESHOLD = 1.3;
+    const LARGE_WIDE_THRESHOLD = 1.8;
+    const MIN_SIZE_FOR_WIDE = 800;
 
-    if (width >= BIG_SIZE || height >= BIG_SIZE) {
-      imageType = "big";
-    } else if (aspectRatio >= WIDE_RATIO) {
+    if (
+      aspectRatio >= LARGE_WIDE_THRESHOLD &&
+      (width >= MIN_SIZE_FOR_WIDE || height >= MIN_SIZE_FOR_WIDE)
+    ) {
+      imageType = "wide-large";
+    } else if (aspectRatio >= WIDE_THRESHOLD) {
       imageType = "wide";
-    } else if (aspectRatio <= TALL_RATIO) {
+    } else {
       imageType = "tall";
     }
 
-    if (imageType) {
-      container.className = imageType + " loaded";
-    } else {
-      container.className = "loaded";
-    }
+    container.className = imageType + " loaded";
   }
 
   window.addNewImage = function (imageSrc, targetContainer) {
@@ -240,27 +238,22 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  // 為單個容器設置hover效果
   function setupHoverEffectForContainer(container) {
     const img = container.querySelector("img");
     const interactBtn = container.querySelector(".interact-btn");
     const title = container.querySelector("h3");
 
     if (img) {
-      // 移除已存在的事件監聽器
       container.removeEventListener("mouseenter", container._mouseenterHandler);
       container.removeEventListener("mouseleave", container._mouseleaveHandler);
 
-      // 建立新的事件處理函式
       container._mouseenterHandler = function () {
-        // 圖片放大效果，保持border-radius
         gsap.to(img, {
           scale: 1.05,
           duration: 0.3,
           ease: "power2.out",
         });
 
-        // 顯示標題和互動按鈕
         if (title) {
           gsap.to(title, {
             opacity: 1,
@@ -281,14 +274,12 @@ document.addEventListener("DOMContentLoaded", function () {
       };
 
       container._mouseleaveHandler = function () {
-        // 恢復圖片原始大小
         gsap.to(img, {
           scale: 1,
           duration: 0.3,
           ease: "power2.out",
         });
 
-        // 隱藏標題和互動按鈕
         if (title) {
           gsap.to(title, {
             opacity: 0,
@@ -306,19 +297,35 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       };
 
-      // 加入事件監聽器
       container.addEventListener("mouseenter", container._mouseenterHandler);
       container.addEventListener("mouseleave", container._mouseleaveHandler);
     }
   }
 
-  // 為每個 .grid-wrapper 內的容器元素加入 hover 效果
   function setupHoverEffects() {
     document.querySelectorAll(".grid-wrapper > div").forEach((container) => {
       setupHoverEffectForContainer(container);
     });
   }
 
-  // 在圖片載入完成後設置hover效果
   setupHoverEffects();
+
+  window.showImageClassification = function () {
+    const containers = document.querySelectorAll(".grid-wrapper > div");
+    console.log("=== 圖片分類結果 ===");
+    containers.forEach((container, index) => {
+      const img = container.querySelector("img");
+      if (img && img.complete && img.naturalWidth > 0) {
+        const width = img.naturalWidth;
+        const height = img.naturalHeight;
+        const aspectRatio = width / height;
+        const className = container.className;
+        console.log(
+          `圖片 ${index + 1}: ${width}x${height} (比例: ${aspectRatio.toFixed(
+            2
+          )}) -> ${className}`
+        );
+      }
+    });
+  };
 });

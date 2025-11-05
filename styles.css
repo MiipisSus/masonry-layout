@@ -2,6 +2,10 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+
+  font-family: "PT Mono", monospace;
+  font-weight: 400;
+  font-style: normal;
 }
 
 :root {
@@ -267,6 +271,22 @@ img {
   will-change: transform;
 }
 
+/* 針對不同圖片類型的特定樣式 */
+.grid-wrapper .wide > img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.grid-wrapper .tall > img {
+  object-fit: cover;
+  object-position: center center;
+}
+
+.grid-wrapper .wide-large > img {
+  object-fit: cover;
+  object-position: center;
+}
+
 .grid-wrapper > div h3 {
   position: absolute;
   top: 10px;
@@ -286,22 +306,35 @@ img {
   opacity: 0;
 }
 
+.grid-wrapper > div .tags {
+  display: flex;
+  margin: 1rem auto 0 0;
+  list-style: none;
+  gap: 2px;
+}
+
 .grid-wrapper {
   display: grid;
-  grid-gap: 10px;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  grid-auto-rows: 200px;
+  grid-gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  grid-auto-rows: 180px;
   grid-auto-flow: dense;
 }
+
+/* 寬圖 - 保持單欄，較矮的高度 */
 .grid-wrapper .wide {
-  grid-column: span 2;
+  grid-row: span 1;
 }
+
+/* 直圖 - 佔據較高的空間，適合垂直圖片 */
 .grid-wrapper .tall {
   grid-row: span 2;
 }
-.grid-wrapper .big {
+
+/* 非常寬且大的圖片 - 佔據兩欄，標準高度 */
+.grid-wrapper .wide-large {
   grid-column: span 2;
-  grid-row: span 2;
+  grid-row: span 1;
 }
 
 @media (max-width: 768px) {
@@ -321,6 +354,16 @@ img {
 
   .grid-wrapper {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-auto-rows: 150px;
+  }
+
+  /* 平板尺寸下的調整 */
+  .grid-wrapper .wide-large {
+    grid-column: span 1;
+  }
+
+  .grid-wrapper .tall {
+    grid-row: span 2;
   }
 }
 
@@ -342,5 +385,15 @@ img {
   .grid-wrapper {
     grid-template-columns: 1fr;
     grid-gap: 8px;
+    grid-auto-rows: 180px;
+  }
+
+  /* 手機版本調整 */
+  .grid-wrapper .wide-large {
+    grid-column: span 1;
+  }
+
+  .grid-wrapper .tall {
+    grid-row: span 2;
   }
 }
