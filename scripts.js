@@ -1,7 +1,7 @@
 // 圖片尺寸分類腳本 - 分批載入顯示版本
 document.addEventListener("DOMContentLoaded", function () {
   // 配置參數
-  const BATCH_SIZE = 30; // 每批載入圖片數量（可調整）
+  const BATCH_SIZE = 20; // 每批載入圖片數量（可調整）
   const SCROLL_THRESHOLD = 300; // 滾動觸發閾值（像素）
 
   // 顯示整頁loading效果
@@ -51,11 +51,18 @@ document.addEventListener("DOMContentLoaded", function () {
     if (isLoadingBatch) return;
 
     isLoadingBatch = true;
+
+    // 顯示批次載入指示器（非第一批時）
+    if (batchIndex > 0) {
+      showBatchLoading();
+    }
+
     const startIndex = batchIndex * BATCH_SIZE;
     const endIndex = Math.min(startIndex + BATCH_SIZE, imageContainers.length);
 
     if (startIndex >= imageContainers.length) {
       isLoadingBatch = false;
+      hideBatchLoading();
       return;
     }
 
@@ -77,6 +84,9 @@ document.addEventListener("DOMContentLoaded", function () {
           showBatch(batchContainers);
           isLoadingBatch = false;
           currentBatchIndex++;
+
+          // 隱藏批次載入指示器
+          hideBatchLoading();
 
           // 如果是第一批，隱藏整頁loading
           if (batchIndex === 0) {
@@ -137,6 +147,32 @@ document.addEventListener("DOMContentLoaded", function () {
       </div>
     `;
     document.body.appendChild(loadingOverlay);
+  }
+
+  // 顯示批次載入指示器
+  function showBatchLoading() {
+    // 避免重複建立
+    if (document.getElementById("batch-loading")) return;
+
+    const batchLoadingIndicator = document.createElement("div");
+    batchLoadingIndicator.id = "batch-loading";
+    batchLoadingIndicator.innerHTML = `
+      <div class="batch-loading-spinner">
+        <div class="spinner"></div>
+      </div>
+    `;
+    document.body.appendChild(batchLoadingIndicator);
+  }
+
+  // 隱藏批次載入指示器
+  function hideBatchLoading() {
+    const batchLoadingIndicator = document.getElementById("batch-loading");
+    if (batchLoadingIndicator) {
+      batchLoadingIndicator.style.opacity = "0";
+      setTimeout(() => {
+        batchLoadingIndicator.remove();
+      }, 300);
+    }
   }
 
   // 隱藏整頁loading效果
