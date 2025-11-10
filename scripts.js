@@ -1,15 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // ===== 常量設定 =====
   const BATCH_SIZE = 20;
   const SCROLL_THRESHOLD = 300;
 
-  // ===== 全域變數 =====
   let currentBatchIndex = 0;
   let isLoadingBatch = false;
   let scrollTimeout;
   const imageContainers = document.querySelectorAll(".grid-wrapper > div");
-
-  // ===== 工具函式 =====
   function showPageLoading() {
     const loadingOverlay = document.createElement("div");
     loadingOverlay.id = "page-loading";
@@ -78,7 +74,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const opacity = isEntering ? 1 : 0;
     const y = isEntering ? 0 : undefined;
 
-    // 對容器內所有的 gallery 圖片套用 scale 效果
     const allGalleryImages = container.querySelectorAll(".gallery-image, img");
     allGalleryImages.forEach((img) => {
       gsap.to(img, {
@@ -107,39 +102,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function setupButtonHoverEffects(container) {
-    // 直接為容器內所有的 i 元素設置 hover 效果
-    const icons = container.querySelectorAll(".gallery-btn i, .interact-btn i");
-    icons.forEach((icon) => {
-      // 檢查是否已經設置過 hover 效果，避免重複綁定
-      if (icon._hoverSetup) return;
-      icon._hoverSetup = true;
-
-      icon.addEventListener("mouseenter", () => {
-        gsap.to(icon, {
-          scale: 1.2,
-          duration: 0.2,
-          ease: "power2.out",
-        });
-      });
-
-      icon.addEventListener("mouseleave", () => {
-        gsap.to(icon, {
-          scale: 1,
-          duration: 0.2,
-          ease: "power2.out",
-        });
-      });
-    });
-  }
-
   function setupAllButtonHoverEffects() {
-    // 直接為所有的 i 元素設置 hover 效果
     document
       .querySelectorAll(".gallery-btn i, .interact-btn i")
       .forEach((icon) => {
-        // 檢查是否已經設置過 hover 效果，避免重複綁定
         if (icon._hoverSetup) return;
+
         icon._hoverSetup = true;
 
         icon.addEventListener("mouseenter", () => {
@@ -160,7 +128,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
-  // ===== 圖片載入系統 =====
   function loadImage(container, onComplete) {
     const img = container.querySelector("img");
 
@@ -199,7 +166,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }, index * 50);
     });
 
-    // 在所有容器顯示後，設置所有按鈕的 hover 效果
     setTimeout(() => {
       setupAllButtonHoverEffects();
     }, containers.length * 50 + 100);
@@ -249,38 +215,52 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  // ===== Hover 效果系統 =====
   function setupHoverEffectForContainer(container) {
-    container.removeEventListener("mouseenter", container._mouseenterHandler);
-    container.removeEventListener("mouseleave", container._mouseleaveHandler);
+    const imageContainer = container.querySelector(".image-container");
+    const targetElement = imageContainer || container;
 
-    container._mouseenterHandler = function () {
+    if (targetElement._mouseenterHandler) {
+      targetElement.removeEventListener(
+        "mouseenter",
+        targetElement._mouseenterHandler
+      );
+      targetElement.removeEventListener(
+        "mouseleave",
+        targetElement._mouseleaveHandler
+      );
+    }
+
+    targetElement._mouseenterHandler = function () {
       const galleryBtn = getGalleryButton(container);
       const interactBtn = getInteractButton(container);
 
       animateElementsOnHover(container, galleryBtn, interactBtn, true);
     };
 
-    container._mouseleaveHandler = function () {
+    targetElement._mouseleaveHandler = function () {
       const galleryBtn = getGalleryButton(container);
       const interactBtn = getInteractButton(container);
 
       animateElementsOnHover(container, galleryBtn, interactBtn, false);
     };
 
-    container.addEventListener("mouseenter", container._mouseenterHandler);
-    container.addEventListener("mouseleave", container._mouseleaveHandler);
+    targetElement.addEventListener(
+      "mouseenter",
+      targetElement._mouseenterHandler
+    );
+    targetElement.addEventListener(
+      "mouseleave",
+      targetElement._mouseleaveHandler
+    );
   }
 
   function setupHoverEffects() {
     document.querySelectorAll(".grid-wrapper > div").forEach((container) => {
       setupHoverEffectForContainer(container);
     });
-    // 為所有按鈕設置 hover 效果
     setupAllButtonHoverEffects();
   }
 
-  // ===== Gallery 系統 =====
   function initializeGalleryContainer(container) {
     const img = container.querySelector(".gallery-image");
     if (!img) return;
@@ -329,14 +309,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function isContainerInHoverState(container) {
-    // 檢查容器是否有 hover 狀態，透過檢查現有圖片的 scale 值
     const currentImg = container.querySelector(".gallery-image, img");
     if (currentImg) {
       const matrix = window.getComputedStyle(currentImg).transform;
       if (matrix !== "none") {
         const values = matrix.split("(")[1].split(")")[0].split(",");
         const scaleX = parseFloat(values[0]);
-        return scaleX > 1.01; // 如果 scale 大於 1.01，表示處於 hover 狀態
+        return scaleX > 1.01;
       }
     }
     return false;
@@ -356,7 +335,7 @@ document.addEventListener("DOMContentLoaded", function () {
     gsap.set(newImg, {
       x: slideDirection * 100 + "%",
       zIndex: 1,
-      scale: initialScale, // 直接設定初始 scale 狀態
+      scale: initialScale,
     });
 
     return newImg;
@@ -367,8 +346,6 @@ document.addEventListener("DOMContentLoaded", function () {
       onComplete: () => {
         currentImg.remove();
         gsap.set(newImg, { zIndex: "auto" });
-
-        // 移除重新觸發 hover 的邏輯，讓 hover 效果自然作用於所有圖片
       },
     });
 
@@ -407,7 +384,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const currentImg = container.querySelector(".gallery-image");
     const slideDirection = direction > 0 ? 1 : -1;
 
-    // 檢查父容器是否正處於 hover 狀態
     const parentContainer = container.closest(".grid-wrapper > div");
     const isHovered =
       parentContainer && isContainerInHoverState(parentContainer);
@@ -448,7 +424,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
 
-  // ===== 事件處理函式 =====
   function handleScroll() {
     const scrollPosition = window.scrollY + window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
@@ -467,7 +442,6 @@ document.addEventListener("DOMContentLoaded", function () {
     window.mouseY = e.clientY;
   }
 
-  // ===== 公用 API 函式 =====
   window.addNewImage = function (imageSrc, targetContainer) {
     const newDiv = document.createElement("div");
     const newImg = document.createElement("img");
@@ -508,11 +482,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   };
 
-  // ===== 初始化邏輯 =====
   function initializeApp() {
     showPageLoading();
 
-    // 設置圖片為懶載入狀態
     imageContainers.forEach((container, index) => {
       const img = container.querySelector("img");
       if (img) {
@@ -522,7 +494,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
 
-    // 設置事件監聽器
     window.addEventListener("scroll", function () {
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(handleScroll, 100);
@@ -530,14 +501,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.addEventListener("mousemove", trackMousePosition);
 
-    // 開始載入第一批圖片
     loadBatch(0);
 
-    // 設置 hover 效果和 gallery 控制
     setupHoverEffects();
     setupGalleryControls();
   }
 
-  // 啟動應用
   initializeApp();
 });
