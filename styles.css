@@ -347,13 +347,23 @@ body {
 
 /* === 互動元素 === */
 .image-container .gallery-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
   position: absolute;
   top: 10px;
   left: 10px;
-  font-size: 1.5rem;
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
-  /* opacity: 0; */
   z-index: 10;
+
+  i {
+    font-size: 1.5rem;
+  }
+
+  .gallery-counter {
+    font-size: 1rem;
+  }
 }
 
 .image-container .gallery-btn {

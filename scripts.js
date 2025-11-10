@@ -342,7 +342,13 @@ document.addEventListener("DOMContentLoaded", function () {
           if (!container.querySelector(".gallery-info")) {
             const galleryInfo = document.createElement("div");
             galleryInfo.className = "gallery-info";
-            galleryInfo.innerHTML = '<i class="ri-multi-image-fill"></i>';
+            const currentIndex = parseInt(container.dataset.currentIndex) || 0;
+            galleryInfo.innerHTML = `
+              <i class="ri-multi-image-fill"></i>
+              <div class="gallery-counter">${currentIndex + 1}/${
+              gallery.length
+            }</div>
+            `;
             container.appendChild(galleryInfo);
           }
         }
@@ -379,6 +385,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     container.dataset.currentIndex = currentIndex;
+
+    const galleryCounter = container.querySelector(
+      ".gallery-info .gallery-counter"
+    );
+    if (galleryCounter) {
+      galleryCounter.textContent = `${currentIndex + 1}/${gallery.length}`;
+    }
 
     const currentImg = container.querySelector(".gallery-image");
 
