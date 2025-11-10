@@ -280,7 +280,6 @@ body {
 .image-container {
   position: relative;
   flex: 1;
-  border-radius: 5px;
   display: inline-block;
   width: 100%;
   overflow: hidden;
@@ -294,7 +293,6 @@ body {
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 5px;
   transform-origin: center;
   will-change: transform, opacity;
 }
@@ -312,7 +310,6 @@ body {
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 5px;
   transform-origin: center;
   will-change: transform, opacity;
   position: relative;
