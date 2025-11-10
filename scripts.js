@@ -54,14 +54,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function getImageElement(container) {
-    const imageContainer = container.querySelector(".image-container");
-    return imageContainer
-      ? imageContainer.querySelector(".gallery-image") ||
-          imageContainer.querySelector("img")
-      : container.querySelector("img");
-  }
-
   function getGalleryButton(container) {
     const imageContainer = container.querySelector(".image-container");
     return imageContainer
@@ -115,6 +107,59 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function setupButtonHoverEffects(container) {
+    // 直接為容器內所有的 i 元素設置 hover 效果
+    const icons = container.querySelectorAll(".gallery-btn i, .interact-btn i");
+    icons.forEach((icon) => {
+      // 檢查是否已經設置過 hover 效果，避免重複綁定
+      if (icon._hoverSetup) return;
+      icon._hoverSetup = true;
+
+      icon.addEventListener("mouseenter", () => {
+        gsap.to(icon, {
+          scale: 1.2,
+          duration: 0.2,
+          ease: "power2.out",
+        });
+      });
+
+      icon.addEventListener("mouseleave", () => {
+        gsap.to(icon, {
+          scale: 1,
+          duration: 0.2,
+          ease: "power2.out",
+        });
+      });
+    });
+  }
+
+  function setupAllButtonHoverEffects() {
+    // 直接為所有的 i 元素設置 hover 效果
+    document
+      .querySelectorAll(".gallery-btn i, .interact-btn i")
+      .forEach((icon) => {
+        // 檢查是否已經設置過 hover 效果，避免重複綁定
+        if (icon._hoverSetup) return;
+        icon._hoverSetup = true;
+
+        icon.addEventListener("mouseenter", () => {
+          gsap.to(icon, {
+            scale: 1.2,
+            duration: 0.2,
+            ease: "power2.out",
+          });
+        });
+
+        icon.addEventListener("mouseleave", () => {
+          gsap.to(icon, {
+            scale: 1,
+            duration: 0.2,
+            ease: "power2.out",
+          });
+        });
+      });
+  }
+
   // ===== 圖片載入系統 =====
   function loadImage(container, onComplete) {
     const img = container.querySelector("img");
@@ -153,6 +198,11 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       }, index * 50);
     });
+
+    // 在所有容器顯示後，設置所有按鈕的 hover 效果
+    setTimeout(() => {
+      setupAllButtonHoverEffects();
+    }, containers.length * 50 + 100);
   }
 
   function loadBatch(batchIndex) {
@@ -226,6 +276,8 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".grid-wrapper > div").forEach((container) => {
       setupHoverEffectForContainer(container);
     });
+    // 為所有按鈕設置 hover 效果
+    setupAllButtonHoverEffects();
   }
 
   // ===== Gallery 系統 =====
