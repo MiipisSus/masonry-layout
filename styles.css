@@ -125,11 +125,11 @@ body {
   margin: 0 auto;
   padding: 0;
 
-  @media (min-width: 320px) {
+  @media (min-width: 640px) {
     column-count: 2;
   }
 
-  @media (min-width: 640px) {
+  @media (min-width: 960px) {
     column-count: 3;
   }
 
@@ -392,4 +392,24 @@ body {
   margin: 1rem auto 0 0;
   list-style: none;
   gap: 10px;
+}
+
+@media (min-width: 640px) {
+  .grid-wrapper {
+    column-count: 2;
+  }
+
+  .post-info .tag {
+    font-size: 0.65rem;
+  }
+}
+
+@media (min-width: 960px) {
+  .grid-wrapper {
+    column-count: 3;
+  }
+
+  .post-info .tag {
+    font-size: 0.75rem;
+  }
 }
