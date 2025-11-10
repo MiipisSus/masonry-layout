@@ -1,8 +1,8 @@
+/* === 基礎重置與變數 === */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-
   font-family: "PT Mono", monospace;
   font-weight: 400;
   font-style: normal;
@@ -14,12 +14,14 @@
   --sidebar-padding: 40px 30px;
 }
 
+/* === 基礎佈局 === */
 html,
 body {
   background-color: #190f2c;
   min-height: 100vh;
 }
 
+/* === 側邊欄 === */
 .side-bar {
   position: fixed;
   top: 0;
@@ -49,12 +51,14 @@ body {
   object-fit: cover;
 }
 
+/* === 主要內容區域 === */
 .main-content {
   margin: 3rem 3rem 0 var(--sidebar-width);
   padding: 15px;
   min-height: 100vh;
 }
 
+/* === 載入動畫 === */
 #page-loading {
   position: fixed;
   top: 0;
@@ -86,15 +90,14 @@ body {
 }
 
 #batch-loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-
   position: fixed;
   bottom: 30px;
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
   background: rgba(0, 0, 0, 0.2);
   backdrop-filter: blur(10px);
   padding: 15px 20px;
@@ -117,6 +120,7 @@ body {
   animation: spin 1s linear infinite;
 }
 
+/* === 網格佈局 === */
 .grid-wrapper {
   list-style: none;
   width: 100%;
@@ -138,12 +142,11 @@ body {
     width: 100%;
     margin-block: 2.5rem;
     break-inside: avoid;
+    color: white;
 
     &:first-child {
       margin-top: 0;
     }
-
-    color: white;
   }
 
   img {
@@ -152,6 +155,7 @@ body {
   }
 }
 
+/* === 網格項目狀態 === */
 .grid-wrapper > div.loading {
   background: linear-gradient(
     90deg,
@@ -213,10 +217,33 @@ body {
 .lazy-img.loaded {
   opacity: 1;
 }
+
 .batch-reveal {
   animation: batchFadeIn 0.6s ease-out;
 }
 
+/* === 響應式設計 === */
+@media (min-width: 640px) {
+  .grid-wrapper {
+    column-count: 2;
+  }
+
+  .post-info .tag {
+    font-size: 0.65rem;
+  }
+}
+
+@media (min-width: 960px) {
+  .grid-wrapper {
+    column-count: 3;
+  }
+
+  .post-info .tag {
+    font-size: 0.75rem;
+  }
+}
+
+/* === 動畫效果 === */
 @keyframes batchFadeIn {
   from {
     opacity: 0;
@@ -275,6 +302,7 @@ body {
   }
 }
 
+/* === 圖片容器 === */
 .image-container {
   position: relative;
   flex: 1;
@@ -288,6 +316,16 @@ body {
   width: 100%;
   height: 0;
   padding-bottom: var(--gallery-padding-bottom, 56.25%);
+}
+
+/* === 圖片樣式 === */
+.image-container > img {
+  width: 100%;
+  height: auto;
+  display: block;
+  transform-origin: center;
+  will-change: transform, opacity;
+  position: relative;
 }
 
 .image-container .gallery-image {
@@ -307,20 +345,11 @@ body {
   object-fit: cover;
 }
 
-.image-container > img {
-  width: 100%;
-  height: auto;
-  display: block;
-  transform-origin: center;
-  will-change: transform, opacity;
-  position: relative;
-}
-
+/* === 互動元素 === */
 .image-container h3 {
   position: absolute;
   top: 10px;
   left: 10px;
-
   font-size: 1.5rem;
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
   opacity: 0;
@@ -334,7 +363,6 @@ body {
   display: flex;
   gap: 10px;
   align-items: center;
-
   font-size: 1.2rem;
   opacity: 0;
   z-index: 10;
@@ -347,27 +375,19 @@ body {
   display: flex;
   gap: 10px;
   align-items: center;
-
   font-size: 1.2rem;
   opacity: 0;
   z-index: 10;
 }
 
+/* === Hover 效果 === */
+.image-container:hover h3,
 .image-container:hover .interact-btn {
   opacity: 1;
   transition: opacity 0.3s ease;
 }
 
-.image-container:hover h3 {
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-
-.image-container:hover h3 {
-  opacity: 1;
-  transition: opacity 0.3s ease;
-}
-
+/* === 文章資訊 === */
 .post-info {
   padding: 8px 0;
   background: transparent;
@@ -392,24 +412,4 @@ body {
   margin: 1rem auto 0 0;
   list-style: none;
   gap: 10px;
-}
-
-@media (min-width: 640px) {
-  .grid-wrapper {
-    column-count: 2;
-  }
-
-  .post-info .tag {
-    font-size: 0.65rem;
-  }
-}
-
-@media (min-width: 960px) {
-  .grid-wrapper {
-    column-count: 3;
-  }
-
-  .post-info .tag {
-    font-size: 0.75rem;
-  }
 }
