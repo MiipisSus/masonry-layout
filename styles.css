@@ -288,6 +288,7 @@ body {
   border-radius: 5px;
   display: inline-block;
   width: 100%;
+  overflow: hidden;
 }
 
 .image-container > img {
