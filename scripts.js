@@ -223,9 +223,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const interactBtn = imageContainer
         ? imageContainer.querySelector(".interact-btn")
         : container.querySelector(".interact-btn");
-      const title = imageContainer
-        ? imageContainer.querySelector("h3")
-        : container.querySelector("h3");
 
       if (img) {
         gsap.to(img, {
@@ -233,15 +230,6 @@ document.addEventListener("DOMContentLoaded", function () {
           duration: 0.3,
           ease: "power2.out",
         });
-
-        if (title) {
-          gsap.to(title, {
-            opacity: 1,
-            y: 0,
-            duration: 0.3,
-            ease: "power2.out",
-          });
-        }
 
         if (galleryBtn) {
           gsap.to(galleryBtn, {
@@ -277,9 +265,6 @@ document.addEventListener("DOMContentLoaded", function () {
       const interactBtn = imageContainer
         ? imageContainer.querySelector(".interact-btn")
         : container.querySelector(".interact-btn");
-      const title = imageContainer
-        ? imageContainer.querySelector("h3")
-        : container.querySelector("h3");
 
       if (img) {
         gsap.to(img, {
@@ -287,14 +272,6 @@ document.addEventListener("DOMContentLoaded", function () {
           duration: 0.3,
           ease: "power2.out",
         });
-
-        if (title) {
-          gsap.to(title, {
-            opacity: 0,
-            duration: 0.3,
-            ease: "power2.out",
-          });
-        }
 
         if (galleryBtn) {
           gsap.to(galleryBtn, {
@@ -356,6 +333,21 @@ document.addEventListener("DOMContentLoaded", function () {
   function initializeGalleryContainer(container) {
     const img = container.querySelector(".gallery-image");
     if (img) {
+      // 檢查是否有多張圖片，如果有則添加 gallery-info
+      const galleryData = container.dataset.gallery;
+      if (galleryData) {
+        const gallery = JSON.parse(galleryData);
+        if (gallery.length > 1) {
+          // 檢查是否已經存在 gallery-info，避免重複添加
+          if (!container.querySelector(".gallery-info")) {
+            const galleryInfo = document.createElement("div");
+            galleryInfo.className = "gallery-info";
+            galleryInfo.innerHTML = '<i class="ri-multi-image-fill"></i>';
+            container.appendChild(galleryInfo);
+          }
+        }
+      }
+
       const tempImg = new Image();
       tempImg.onload = () => {
         const aspectRatio = tempImg.naturalHeight / tempImg.naturalWidth;
