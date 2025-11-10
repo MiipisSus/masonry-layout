@@ -398,6 +398,35 @@ body {
   cursor: pointer;
 }
 
+.interact-btn .social-btn {
+  display: none;
+  /* background-color: white; */
+  border-radius: 15px;
+  padding: 5px 10px 5px 0;
+  gap: 5px;
+  /* margin-left: 8px; */
+  align-items: center;
+}
+
+.interact-btn .social-btn i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #190f2c;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.interact-btn .social-btn i:hover {
+  transform: scale(1.1);
+}
+
+/* .interact-btn .social-btn i {
+  display: inline-block;
+  margin-left: 5px;
+  color: #190f2c;
+} */
+
 /* === 文章資訊 === */
 .post-info {
   padding: 8px 0;

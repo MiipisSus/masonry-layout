@@ -70,18 +70,25 @@ document.addEventListener("DOMContentLoaded", function () {
     interactBtn,
     isEntering
   ) {
-    const scale = isEntering ? 1.05 : 1;
+    const shareBtn = container.querySelector(".ri-share-fill");
+    const isShareExpanded = shareBtn !== null;
+
+    const scale = isEntering && !isShareExpanded ? 1.05 : 1;
     const opacity = isEntering ? 1 : 0;
     const y = isEntering ? 0 : undefined;
 
-    const allGalleryImages = container.querySelectorAll(".gallery-image, img");
-    allGalleryImages.forEach((img) => {
-      gsap.to(img, {
-        scale: scale,
-        duration: 0.3,
-        ease: "power2.out",
+    if (!isShareExpanded) {
+      const allGalleryImages = container.querySelectorAll(
+        ".gallery-image, img"
+      );
+      allGalleryImages.forEach((img) => {
+        gsap.to(img, {
+          scale: scale,
+          duration: 0.3,
+          ease: "power2.out",
+        });
       });
-    });
+    }
 
     if (galleryBtn) {
       gsap.to(galleryBtn, {
@@ -168,9 +175,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setTimeout(() => {
       setupAllButtonHoverEffects();
+      setupShareButtons();
     }, containers.length * 50 + 100);
   }
-
   function loadBatch(batchIndex) {
     if (isLoadingBatch) return;
 
@@ -442,6 +449,83 @@ document.addEventListener("DOMContentLoaded", function () {
     window.mouseY = e.clientY;
   }
 
+  function handleShareClick(shareBtn) {
+    const socialBtn = shareBtn.parentElement.querySelector(".social-btn");
+    const socialIcons = socialBtn.querySelectorAll("i");
+    const isActive = shareBtn.classList.contains("ri-share-fill");
+
+    if (isActive) {
+      const timeline = gsap.timeline({
+        onComplete: () => {
+          shareBtn.className = "ri-share-line";
+          socialBtn.style.display = "none";
+        },
+      });
+
+      timeline.to(socialIcons, {
+        opacity: 0,
+        scale: 0.8,
+        x: -15,
+        duration: 0.2,
+        stagger: -0.05,
+        ease: "power2.in",
+      });
+
+      timeline.to(
+        socialBtn,
+        {
+          opacity: 0,
+          duration: 0.15,
+          ease: "power2.in",
+        },
+        "-=0.1"
+      );
+    } else {
+      shareBtn.className = "ri-share-fill";
+      socialBtn.style.display = "flex";
+
+      gsap.set(socialBtn, { opacity: 0 });
+      gsap.set(socialIcons, {
+        opacity: 0,
+        scale: 0.7,
+        x: -20,
+      });
+
+      const timeline = gsap.timeline();
+
+      timeline.to(socialBtn, {
+        opacity: 1,
+        duration: 0.2,
+        ease: "power2.out",
+      });
+
+      timeline.to(
+        socialIcons,
+        {
+          opacity: 1,
+          scale: 1,
+          x: 0,
+          duration: 0.4,
+          stagger: 0.08,
+          ease: "back.out(2)",
+        },
+        "-=0.1"
+      );
+    }
+  }
+
+  function setupShareButtons() {
+    document.querySelectorAll(".ri-share-line").forEach((shareBtn) => {
+      if (shareBtn._shareSetup) return;
+      shareBtn._shareSetup = true;
+
+      shareBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        handleShareClick(shareBtn);
+      });
+    });
+  }
+
   window.addNewImage = function (imageSrc, targetContainer) {
     const newDiv = document.createElement("div");
     const newImg = document.createElement("img");
@@ -505,6 +589,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     setupHoverEffects();
     setupGalleryControls();
+    setupShareButtons();
   }
 
   initializeApp();
