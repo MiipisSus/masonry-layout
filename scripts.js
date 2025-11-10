@@ -76,18 +76,25 @@ document.addEventListener("DOMContentLoaded", function () {
       : container.querySelector(".interact-btn");
   }
 
-  function animateElementsOnHover(img, galleryBtn, interactBtn, isEntering) {
+  function animateElementsOnHover(
+    container,
+    galleryBtn,
+    interactBtn,
+    isEntering
+  ) {
     const scale = isEntering ? 1.05 : 1;
     const opacity = isEntering ? 1 : 0;
     const y = isEntering ? 0 : undefined;
 
-    if (img) {
+    // 對容器內所有的 gallery 圖片套用 scale 效果
+    const allGalleryImages = container.querySelectorAll(".gallery-image, img");
+    allGalleryImages.forEach((img) => {
       gsap.to(img, {
         scale: scale,
         duration: 0.3,
         ease: "power2.out",
       });
-    }
+    });
 
     if (galleryBtn) {
       gsap.to(galleryBtn, {
@@ -106,19 +113,6 @@ document.addEventListener("DOMContentLoaded", function () {
         ease: "power2.out",
       });
     }
-  }
-
-  function isMouseInsideContainer(container) {
-    const rect = container.getBoundingClientRect();
-    const mouseX = window.mouseX || 0;
-    const mouseY = window.mouseY || 0;
-
-    return (
-      mouseX >= rect.left &&
-      mouseX <= rect.right &&
-      mouseY >= rect.top &&
-      mouseY <= rect.bottom
-    );
   }
 
   // ===== 圖片載入系統 =====
@@ -211,19 +205,17 @@ document.addEventListener("DOMContentLoaded", function () {
     container.removeEventListener("mouseleave", container._mouseleaveHandler);
 
     container._mouseenterHandler = function () {
-      const img = getImageElement(container);
       const galleryBtn = getGalleryButton(container);
       const interactBtn = getInteractButton(container);
 
-      animateElementsOnHover(img, galleryBtn, interactBtn, true);
+      animateElementsOnHover(container, galleryBtn, interactBtn, true);
     };
 
     container._mouseleaveHandler = function () {
-      const img = getImageElement(container);
       const galleryBtn = getGalleryButton(container);
       const interactBtn = getInteractButton(container);
 
-      animateElementsOnHover(img, galleryBtn, interactBtn, false);
+      animateElementsOnHover(container, galleryBtn, interactBtn, false);
     };
 
     container.addEventListener("mouseenter", container._mouseenterHandler);
@@ -284,14 +276,35 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  function createNewGalleryImage(src, slideDirection) {
+  function isContainerInHoverState(container) {
+    // 檢查容器是否有 hover 狀態，透過檢查現有圖片的 scale 值
+    const currentImg = container.querySelector(".gallery-image, img");
+    if (currentImg) {
+      const matrix = window.getComputedStyle(currentImg).transform;
+      if (matrix !== "none") {
+        const values = matrix.split("(")[1].split(")")[0].split(",");
+        const scaleX = parseFloat(values[0]);
+        return scaleX > 1.01; // 如果 scale 大於 1.01，表示處於 hover 狀態
+      }
+    }
+    return false;
+  }
+
+  function createNewGalleryImage(
+    src,
+    slideDirection,
+    shouldApplyHoverScale = false
+  ) {
     const newImg = document.createElement("img");
     newImg.className = "gallery-image";
     newImg.src = src;
 
+    const initialScale = shouldApplyHoverScale ? 1.05 : 1;
+
     gsap.set(newImg, {
       x: slideDirection * 100 + "%",
       zIndex: 1,
+      scale: initialScale, // 直接設定初始 scale 狀態
     });
 
     return newImg;
@@ -303,14 +316,7 @@ document.addEventListener("DOMContentLoaded", function () {
         currentImg.remove();
         gsap.set(newImg, { zIndex: "auto" });
 
-        const parentContainer = newImg.closest(".grid-wrapper > div");
-        if (parentContainer && isMouseInsideContainer(parentContainer)) {
-          setTimeout(() => {
-            if (parentContainer._mouseenterHandler) {
-              parentContainer._mouseenterHandler();
-            }
-          }, 50);
-        }
+        // 移除重新觸發 hover 的邏輯，讓 hover 效果自然作用於所有圖片
       },
     });
 
@@ -348,7 +354,17 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const currentImg = container.querySelector(".gallery-image");
     const slideDirection = direction > 0 ? 1 : -1;
-    const newImg = createNewGalleryImage(gallery[currentIndex], slideDirection);
+
+    // 檢查父容器是否正處於 hover 狀態
+    const parentContainer = container.closest(".grid-wrapper > div");
+    const isHovered =
+      parentContainer && isContainerInHoverState(parentContainer);
+
+    const newImg = createNewGalleryImage(
+      gallery[currentIndex],
+      slideDirection,
+      isHovered
+    );
 
     gsap.set(currentImg, { zIndex: 0 });
     container.appendChild(newImg);
