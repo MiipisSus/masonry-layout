@@ -298,4 +298,41 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   setupHoverEffects();
+  setupGalleryControls();
+
+  function setupGalleryControls() {
+    document
+      .querySelectorAll(".image-container[data-gallery]")
+      .forEach((container) => {
+        const prevBtn = container.querySelector(".gallery-prev");
+        const nextBtn = container.querySelector(".gallery-next");
+
+        if (prevBtn && nextBtn) {
+          prevBtn.addEventListener("click", () =>
+            changeGalleryImage(container, -1)
+          );
+          nextBtn.addEventListener("click", () =>
+            changeGalleryImage(container, 1)
+          );
+        }
+      });
+  }
+
+  function changeGalleryImage(container, direction) {
+    const gallery = JSON.parse(container.dataset.gallery);
+    let currentIndex = parseInt(container.dataset.currentIndex);
+
+    currentIndex += direction;
+
+    if (currentIndex < 0) {
+      currentIndex = gallery.length - 1;
+    } else if (currentIndex >= gallery.length) {
+      currentIndex = 0;
+    }
+
+    container.dataset.currentIndex = currentIndex;
+
+    const img = container.querySelector("img");
+    img.src = gallery[currentIndex];
+  }
 });
