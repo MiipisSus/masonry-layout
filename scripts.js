@@ -204,6 +204,10 @@ document.addEventListener("DOMContentLoaded", function () {
       ? imageContainer.querySelector("img")
       : container.querySelector("img");
 
+    const galleryBtn = imageContainer
+      ? imageContainer.querySelector(".gallery-btn")
+      : container.querySelector(".gallery-btn");
+
     const interactBtn = imageContainer
       ? imageContainer.querySelector(".interact-btn")
       : container.querySelector(".interact-btn");
@@ -231,6 +235,15 @@ document.addEventListener("DOMContentLoaded", function () {
           });
         }
 
+        if (galleryBtn) {
+          gsap.to(galleryBtn, {
+            opacity: 1,
+            y: 0,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        }
+
         if (interactBtn) {
           gsap.to(interactBtn, {
             opacity: 1,
@@ -250,6 +263,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (title) {
           gsap.to(title, {
+            opacity: 0,
+            duration: 0.3,
+            ease: "power2.out",
+          });
+        }
+
+        if (galleryBtn) {
+          gsap.to(galleryBtn, {
             opacity: 0,
             duration: 0.3,
             ease: "power2.out",
