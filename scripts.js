@@ -110,6 +110,13 @@ document.addEventListener("DOMContentLoaded", function () {
         container.style.display = "block";
         container.classList.add("batch-reveal");
         setupHoverEffectForContainer(container);
+
+        const galleryContainer = container.querySelector(
+          ".image-container[data-gallery]"
+        );
+        if (galleryContainer) {
+          initializeGalleryContainer(galleryContainer);
+        }
       }, index * 50);
     });
   }
@@ -199,27 +206,28 @@ document.addEventListener("DOMContentLoaded", function () {
   };
 
   function setupHoverEffectForContainer(container) {
-    const imageContainer = container.querySelector(".image-container");
-    const img = imageContainer
-      ? imageContainer.querySelector("img")
-      : container.querySelector("img");
+    container.removeEventListener("mouseenter", container._mouseenterHandler);
+    container.removeEventListener("mouseleave", container._mouseleaveHandler);
 
-    const galleryBtn = imageContainer
-      ? imageContainer.querySelector(".gallery-btn")
-      : container.querySelector(".gallery-btn");
+    container._mouseenterHandler = function () {
+      const imageContainer = container.querySelector(".image-container");
+      const img = imageContainer
+        ? imageContainer.querySelector(".gallery-image") ||
+          imageContainer.querySelector("img")
+        : container.querySelector("img");
 
-    const interactBtn = imageContainer
-      ? imageContainer.querySelector(".interact-btn")
-      : container.querySelector(".interact-btn");
-    const title = imageContainer
-      ? imageContainer.querySelector("h3")
-      : container.querySelector("h3");
+      const galleryBtn = imageContainer
+        ? imageContainer.querySelector(".gallery-btn")
+        : container.querySelector(".gallery-btn");
 
-    if (img) {
-      container.removeEventListener("mouseenter", container._mouseenterHandler);
-      container.removeEventListener("mouseleave", container._mouseleaveHandler);
+      const interactBtn = imageContainer
+        ? imageContainer.querySelector(".interact-btn")
+        : container.querySelector(".interact-btn");
+      const title = imageContainer
+        ? imageContainer.querySelector("h3")
+        : container.querySelector("h3");
 
-      container._mouseenterHandler = function () {
+      if (img) {
         gsap.to(img, {
           scale: 1.05,
           duration: 0.3,
@@ -252,9 +260,28 @@ document.addEventListener("DOMContentLoaded", function () {
             ease: "power2.out",
           });
         }
-      };
+      }
+    };
 
-      container._mouseleaveHandler = function () {
+    container._mouseleaveHandler = function () {
+      const imageContainer = container.querySelector(".image-container");
+      const img = imageContainer
+        ? imageContainer.querySelector(".gallery-image") ||
+          imageContainer.querySelector("img")
+        : container.querySelector("img");
+
+      const galleryBtn = imageContainer
+        ? imageContainer.querySelector(".gallery-btn")
+        : container.querySelector(".gallery-btn");
+
+      const interactBtn = imageContainer
+        ? imageContainer.querySelector(".interact-btn")
+        : container.querySelector(".interact-btn");
+      const title = imageContainer
+        ? imageContainer.querySelector("h3")
+        : container.querySelector("h3");
+
+      if (img) {
         gsap.to(img, {
           scale: 1,
           duration: 0.3,
@@ -284,11 +311,11 @@ document.addEventListener("DOMContentLoaded", function () {
             ease: "power2.out",
           });
         }
-      };
+      }
+    };
 
-      container.addEventListener("mouseenter", container._mouseenterHandler);
-      container.addEventListener("mouseleave", container._mouseleaveHandler);
-    }
+    container.addEventListener("mouseenter", container._mouseenterHandler);
+    container.addEventListener("mouseleave", container._mouseleaveHandler);
   }
 
   function setupHoverEffects() {
@@ -299,6 +326,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   setupHoverEffects();
   setupGalleryControls();
+
+  // 追蹤滑鼠位置，用於圖片切換後檢查 hover 狀態
+  document.addEventListener("mousemove", (e) => {
+    window.mouseX = e.clientX;
+    window.mouseY = e.clientY;
+  });
 
   function setupGalleryControls() {
     document
@@ -315,12 +348,35 @@ document.addEventListener("DOMContentLoaded", function () {
             changeGalleryImage(container, 1)
           );
         }
+
+        initializeGalleryContainer(container);
       });
+  }
+
+  function initializeGalleryContainer(container) {
+    const img = container.querySelector(".gallery-image");
+    if (img) {
+      const tempImg = new Image();
+      tempImg.onload = () => {
+        const aspectRatio = tempImg.naturalHeight / tempImg.naturalWidth;
+        const containerWidth = container.offsetWidth;
+        const containerHeight = containerWidth * aspectRatio;
+
+        container.style.height = containerHeight + "px";
+
+        gsap.set(img, {
+          x: "0%",
+          zIndex: "auto",
+        });
+      };
+      tempImg.src = img.src;
+    }
   }
 
   function changeGalleryImage(container, direction) {
     const gallery = JSON.parse(container.dataset.gallery);
     let currentIndex = parseInt(container.dataset.currentIndex);
+    const oldIndex = currentIndex;
 
     currentIndex += direction;
 
@@ -332,7 +388,74 @@ document.addEventListener("DOMContentLoaded", function () {
 
     container.dataset.currentIndex = currentIndex;
 
-    const img = container.querySelector("img");
-    img.src = gallery[currentIndex];
+    const currentImg = container.querySelector(".gallery-image");
+
+    const newImg = document.createElement("img");
+    newImg.className = "gallery-image";
+    newImg.src = gallery[currentIndex];
+
+    const slideDirection = direction > 0 ? 1 : -1;
+
+    gsap.set(newImg, {
+      x: slideDirection * 100 + "%",
+      zIndex: 1,
+    });
+
+    gsap.set(currentImg, {
+      zIndex: 0,
+    });
+
+    container.appendChild(newImg);
+
+    const tempImg = new Image();
+    tempImg.onload = () => {
+      const timeline = gsap.timeline({
+        onComplete: () => {
+          currentImg.remove();
+          gsap.set(newImg, { zIndex: "auto" });
+
+          const parentContainer = container.closest(".grid-wrapper > div");
+          if (parentContainer) {
+            setupHoverEffectForContainer(parentContainer);
+
+            // 檢查滑鼠是否還在容器內，如果是的話保持 hover 狀態
+            setTimeout(() => {
+              const rect = parentContainer.getBoundingClientRect();
+              const mouseX = window.mouseX || 0;
+              const mouseY = window.mouseY || 0;
+
+              if (
+                mouseX >= rect.left &&
+                mouseX <= rect.right &&
+                mouseY >= rect.top &&
+                mouseY <= rect.bottom
+              ) {
+                if (parentContainer._mouseenterHandler) {
+                  parentContainer._mouseenterHandler();
+                }
+              }
+            }, 50);
+          }
+        },
+      });
+
+      timeline
+        .to(currentImg, {
+          x: -slideDirection * 100 + "%",
+          duration: 0.5,
+          ease: "power2.inOut",
+        })
+        .to(
+          newImg,
+          {
+            x: "0%",
+            duration: 0.5,
+            ease: "power2.inOut",
+          },
+          0
+        );
+    };
+
+    tempImg.src = gallery[currentIndex];
   }
 });
