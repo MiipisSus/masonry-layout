@@ -359,10 +359,10 @@ document.addEventListener("DOMContentLoaded", function () {
       const tempImg = new Image();
       tempImg.onload = () => {
         const aspectRatio = tempImg.naturalHeight / tempImg.naturalWidth;
-        const containerWidth = container.offsetWidth;
-        const containerHeight = containerWidth * aspectRatio;
+        const paddingBottom = aspectRatio * 100 + "%";
 
-        container.style.height = containerHeight + "px";
+        // 設定 padding-bottom 來維持響應式比例
+        container.style.setProperty("--gallery-padding-bottom", paddingBottom);
 
         gsap.set(img, {
           x: "0%",

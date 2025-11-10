@@ -287,6 +287,9 @@ body {
 
 .image-container[data-gallery] {
   position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: var(--gallery-padding-bottom, 56.25%);
 }
 
 .image-container .gallery-image {
