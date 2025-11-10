@@ -107,7 +107,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function showBatch(containers) {
     containers.forEach((container, index) => {
       setTimeout(() => {
-        container.style.display = "flex";
+        container.style.display = "block";
         container.classList.add("batch-reveal");
         setupHoverEffectForContainer(container);
       }, index * 50);
