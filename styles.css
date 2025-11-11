@@ -395,6 +395,7 @@ body {
   display: inline-block;
   width: 100%;
   overflow: hidden;
+  cursor: pointer;
 }
 
 .image-container[data-gallery] {
