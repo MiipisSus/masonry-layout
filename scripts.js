@@ -224,7 +224,7 @@ document.addEventListener("DOMContentLoaded", function () {
           x: -5,
           rotate: 45,
           scale: 1.1,
-          color: "#4a70a9",
+          color: "#87bbc9",
           duration: 0.2,
           ease: "bounce.out",
         });

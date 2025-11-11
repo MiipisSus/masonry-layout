@@ -16,9 +16,18 @@
 
 :root {
   --black: #153337;
-  --dark-blue: #4a70a9;
-  --blue: #8fabd4;
+  --light-blue: #87bbc9;
   --grey: #efece3;
+  --facebook-blue: #4267b2;
+  --twitter-blue: #1da1f2;
+  --instagram-gradient: linear-gradient(
+    45deg,
+    #f9ce34 0%,
+    #ee2a7b 50%,
+    #6228d7 100%
+  );
+  --instagram-pink: #e4405f;
+  --email-color: #34495e;
 }
 
 /* === 基礎佈局 === */
@@ -74,6 +83,35 @@ body {
   margin-bottom: 3rem;
   font-size: 1.2rem;
   color: var(--grey);
+}
+
+.social-link i {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.social-link i:hover {
+  transform: scale(1.1);
+}
+
+.social-link .ri-facebook-box-fill:hover {
+  color: var(--facebook-blue);
+}
+
+.social-link .ri-twitter-fill:hover {
+  color: var(--twitter-blue);
+}
+
+.social-link .ri-instagram-fill:hover {
+  color: var(--instagram-pink);
+  background: var(--instagram-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.social-link .ri-mail-fill:hover {
+  color: var(--email-color);
 }
 
 .nav-section {
@@ -470,11 +508,11 @@ body {
 }
 
 .social-btn .ri-facebook-box-fill:hover {
-  color: #4267b2;
+  color: var(--facebook-blue);
 }
 
 .social-btn .ri-twitter-fill:hover {
-  color: #1da1f2;
+  color: var(--twitter-blue);
 }
 
 /* === 文章資訊 === */
