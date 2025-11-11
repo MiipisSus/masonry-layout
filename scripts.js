@@ -162,6 +162,7 @@ document.addEventListener("DOMContentLoaded", function () {
         );
         if (galleryContainer) {
           initializeGalleryContainer(galleryContainer);
+          setupGalleryControlsForContainer(galleryContainer);
         }
       }, index * 50);
     });
@@ -434,22 +435,29 @@ document.addEventListener("DOMContentLoaded", function () {
     tempImg.src = gallery[currentIndex];
   }
 
+  function setupGalleryControlsForContainer(container) {
+    const prevBtn = container.querySelector(".gallery-prev");
+    const nextBtn = container.querySelector(".gallery-next");
+
+    if (prevBtn && nextBtn) {
+      // 移除舊的事件監聽器，避免重複綁定
+      prevBtn.removeEventListener("click", prevBtn._clickHandler);
+      nextBtn.removeEventListener("click", nextBtn._clickHandler);
+
+      // 建立新的事件監聽器
+      prevBtn._clickHandler = () => changeGalleryImage(container, -1);
+      nextBtn._clickHandler = () => changeGalleryImage(container, 1);
+
+      prevBtn.addEventListener("click", prevBtn._clickHandler);
+      nextBtn.addEventListener("click", nextBtn._clickHandler);
+    }
+  }
+
   function setupGalleryControls() {
     document
       .querySelectorAll(".image-container[data-gallery]")
       .forEach((container) => {
-        const prevBtn = container.querySelector(".gallery-prev");
-        const nextBtn = container.querySelector(".gallery-next");
-
-        if (prevBtn && nextBtn) {
-          prevBtn.addEventListener("click", () =>
-            changeGalleryImage(container, -1)
-          );
-          nextBtn.addEventListener("click", () =>
-            changeGalleryImage(container, 1)
-          );
-        }
-
+        setupGalleryControlsForContainer(container);
         initializeGalleryContainer(container);
       });
   }
