@@ -81,6 +81,8 @@ body {
 }
 
 .nav-section a {
+  display: flex;
+  gap: 0.3rem;
   font-family: poppins, sans-serif;
   text-decoration: none;
   color: white;
