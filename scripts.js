@@ -170,6 +170,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setTimeout(() => {
       setupAllButtonHoverEffects();
       setupShareButtons();
+      setupLikeButton();
     }, containers.length * 50 + 100);
   }
   function loadBatch(batchIndex) {
@@ -448,11 +449,9 @@ document.addEventListener("DOMContentLoaded", function () {
     const nextBtn = container.querySelector(".gallery-next");
 
     if (prevBtn && nextBtn) {
-      // 移除舊的事件監聽器，避免重複綁定
       prevBtn.removeEventListener("click", prevBtn._clickHandler);
       nextBtn.removeEventListener("click", nextBtn._clickHandler);
 
-      // 建立新的事件監聽器
       prevBtn._clickHandler = () => changeGalleryImage(container, -1);
       nextBtn._clickHandler = () => changeGalleryImage(container, 1);
 
@@ -545,6 +544,46 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  function setupLikeButton() {
+    document.querySelectorAll("[class*='ri-heart']").forEach((likeBtn) => {
+      if (likeBtn._likeSetup) return;
+      likeBtn._likeSetup = true;
+
+      likeBtn.addEventListener("click", () => {
+        const isLiked = likeBtn.classList.contains("ri-heart-fill");
+
+        if (isLiked) {
+          gsap.to(likeBtn, {
+            scale: 0.8,
+            duration: 0.15,
+            ease: "power2.out",
+            onComplete: () => {
+              likeBtn.className = "ri-heart-line";
+              gsap.to(likeBtn, {
+                scale: 1,
+                duration: 0.2,
+                ease: "power2.out",
+              });
+            },
+          });
+        } else {
+          likeBtn.className = "ri-heart-fill";
+          gsap.fromTo(
+            likeBtn,
+            { scale: 1 },
+            {
+              scale: 1.8,
+              duration: 0.2,
+              ease: "power2.out",
+              yoyo: true,
+              repeat: 1,
+            }
+          );
+        }
+      });
+    });
+  }
+
   window.addNewImage = function (imageSrc, targetContainer) {
     const newDiv = document.createElement("div");
     const newImg = document.createElement("img");
@@ -609,6 +648,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setupHoverEffects();
     setupGalleryControls();
     setupShareButtons();
+    setupLikeButton();
   }
 
   initializeApp();

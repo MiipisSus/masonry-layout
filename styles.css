@@ -550,3 +550,17 @@ body {
   list-style: none;
   gap: 10px;
 }
+
+/* === 愛心圖示漸變效果 === */
+[class*="ri-heart"] {
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+[class*="ri-heart"]::before {
+  transition: opacity 0.3s ease;
+}
+
+.ri-heart-line {
+  color: inherit;
+}
