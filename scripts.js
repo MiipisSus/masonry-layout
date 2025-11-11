@@ -456,14 +456,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const isActive = shareBtn.classList.contains("ri-share-fill");
-    console.log("分享按鈕狀態:", isActive ? "展開" : "收起");
 
     if (isActive) {
       shareBtn.className = "ri-share-line";
 
       gsap.to(socialIcons, {
         opacity: 0,
-        duration: 0.5,
+        duration: 0.3,
         stagger: -0.1,
         ease: "power2.out",
         onComplete: () => {
