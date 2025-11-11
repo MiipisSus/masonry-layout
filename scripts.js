@@ -215,6 +215,34 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  function setupHoverEffectForSideBar(sideBar) {
+    const navLinks = sideBar.querySelectorAll(".nav-section a");
+    navLinks.forEach((link) => {
+      const linkIcon = link.querySelector("span");
+      link.addEventListener("mouseenter", () => {
+        gsap.to(linkIcon, {
+          x: -5,
+          rotate: 45,
+          scale: 1.1,
+          color: "#4a70a9",
+          duration: 0.2,
+          ease: "bounce.out",
+        });
+      });
+
+      link.addEventListener("mouseleave", () => {
+        gsap.to(linkIcon, {
+          x: 0,
+          rotate: 0,
+          scale: 1,
+          color: "#ffffff",
+          duration: 0.2,
+          ease: "bounce.out",
+        });
+      });
+    });
+  }
+
   function setupHoverEffectForContainer(container) {
     const imageContainer = container.querySelector(".image-container");
     const targetElement = imageContainer || container;
@@ -255,6 +283,8 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function setupHoverEffects() {
+    const sideBar = document.querySelector(".side-bar");
+    setupHoverEffectForSideBar(sideBar);
     document.querySelectorAll(".grid-wrapper > div").forEach((container) => {
       setupHoverEffectForContainer(container);
     });

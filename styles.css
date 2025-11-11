@@ -14,10 +14,17 @@
   --sidebar-padding: 40px 30px;
 }
 
+:root {
+  --black: #153337;
+  --dark-blue: #4a70a9;
+  --blue: #8fabd4;
+  --grey: #efece3;
+}
+
 /* === 基礎佈局 === */
 html,
 body {
-  background-color: #190f2c;
+  background-color: var(--black);
   min-height: 100vh;
 }
 
@@ -26,7 +33,6 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  /* justify-content: space-between; */
   position: fixed;
   top: 0;
   left: 0;
@@ -56,7 +62,7 @@ body {
 }
 
 .side-bar h2 {
-  color: rgb(213, 213, 213);
+  color: var(--grey);
   font-size: 1.5rem;
   font-weight: 600;
   margin-bottom: 1rem;
@@ -67,7 +73,7 @@ body {
   gap: 10px;
   margin-bottom: 3rem;
   font-size: 1.2rem;
-  color: rgb(213, 213, 213);
+  color: var(--grey);
 }
 
 .nav-section {
@@ -85,7 +91,7 @@ body {
   gap: 0.3rem;
   font-family: poppins, sans-serif;
   text-decoration: none;
-  color: white;
+  color: var(--grey);
 }
 
 /* === 主要內容區域 === */
@@ -113,7 +119,7 @@ body {
 
 .loading-spinner {
   text-align: center;
-  color: white;
+  color: var(--grey);
 }
 
 .loading-spinner .spinner {
@@ -179,7 +185,7 @@ body {
     width: 100%;
     margin-block: 2.5rem;
     break-inside: avoid;
-    color: white;
+    color: var(--grey);
 
     &:first-child {
       margin-top: 0;
@@ -486,7 +492,7 @@ body {
 
 .post-info .tag {
   font-size: 0.75rem;
-  color: white;
+  color: var(--grey);
   border-radius: 12px;
 }
 
