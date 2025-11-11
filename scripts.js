@@ -469,26 +469,30 @@ document.addEventListener("DOMContentLoaded", function () {
       shareBtn.className = "ri-share-line";
 
       gsap.to(socialIcons, {
-        x: -20,
         opacity: 0,
-        duration: 0.3,
-        stagger: -0.05,
+        duration: 0.5,
+        stagger: -0.1,
         ease: "power2.out",
         onComplete: () => {
-          socialBtn.style.visibility = "hidden";
+          socialBtn.style.transform = "scaleX(0)";
+          setTimeout(() => {
+            socialBtn.style.visibility = "hidden";
+          }, 300);
         },
       });
     } else {
       shareBtn.className = "ri-share-fill";
       socialBtn.style.visibility = "visible";
+      socialBtn.style.transform = "scaleX(1)";
 
-      gsap.to(socialIcons, {
-        x: 0,
-        opacity: 1,
-        duration: 0.3,
-        stagger: 0.05,
-        ease: "power2.out",
-      });
+      setTimeout(() => {
+        gsap.to(socialIcons, {
+          opacity: 1,
+          duration: 0.5,
+          stagger: 0.1,
+          ease: "power2.out",
+        });
+      }, 100);
     }
   }
   function setupShareButtons() {
