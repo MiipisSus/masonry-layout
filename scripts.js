@@ -70,25 +70,18 @@ document.addEventListener("DOMContentLoaded", function () {
     interactBtn,
     isEntering
   ) {
-    const shareBtn = container.querySelector(".ri-share-fill");
-    const isShareExpanded = shareBtn !== null;
-
-    const scale = isEntering && !isShareExpanded ? 1.05 : 1;
+    const scale = isEntering ? 1.05 : 1;
     const opacity = isEntering ? 1 : 0;
     const y = isEntering ? 0 : undefined;
 
-    if (!isShareExpanded) {
-      const allGalleryImages = container.querySelectorAll(
-        ".gallery-image, img"
-      );
-      allGalleryImages.forEach((img) => {
-        gsap.to(img, {
-          scale: scale,
-          duration: 0.3,
-          ease: "power2.out",
-        });
+    const allGalleryImages = container.querySelectorAll(".gallery-image, img");
+    allGalleryImages.forEach((img) => {
+      gsap.to(img, {
+        scale: scale,
+        duration: 0.3,
+        ease: "power2.out",
       });
-    }
+    });
 
     if (galleryBtn) {
       gsap.to(galleryBtn, {
