@@ -451,71 +451,48 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function handleShareClick(shareBtn) {
     const socialBtn = shareBtn.parentElement.querySelector(".social-btn");
+    if (!socialBtn) {
+      console.warn("找不到 .social-btn 元素");
+      return;
+    }
+
     const socialIcons = socialBtn.querySelectorAll("i");
+    if (socialIcons.length === 0) {
+      console.warn("找不到社交按鈕圖示");
+      return;
+    }
+
     const isActive = shareBtn.classList.contains("ri-share-fill");
+    console.log("分享按鈕狀態:", isActive ? "展開" : "收起");
 
     if (isActive) {
-      const timeline = gsap.timeline({
-        onComplete: () => {
-          shareBtn.className = "ri-share-line";
-          socialBtn.style.display = "none";
-        },
-      });
+      shareBtn.className = "ri-share-line";
 
-      timeline.to(socialIcons, {
+      gsap.to(socialIcons, {
+        x: -20,
         opacity: 0,
-        scale: 0.8,
-        x: -15,
-        duration: 0.2,
+        duration: 0.3,
         stagger: -0.05,
-        ease: "power2.in",
-      });
-
-      timeline.to(
-        socialBtn,
-        {
-          opacity: 0,
-          duration: 0.15,
-          ease: "power2.in",
+        ease: "power2.out",
+        onComplete: () => {
+          socialBtn.style.visibility = "hidden";
         },
-        "-=0.1"
-      );
+      });
     } else {
       shareBtn.className = "ri-share-fill";
-      socialBtn.style.display = "flex";
+      socialBtn.style.visibility = "visible";
 
-      gsap.set(socialBtn, { opacity: 0 });
-      gsap.set(socialIcons, {
-        opacity: 0,
-        scale: 0.7,
-        x: -20,
-      });
-
-      const timeline = gsap.timeline();
-
-      timeline.to(socialBtn, {
+      gsap.to(socialIcons, {
+        x: 0,
         opacity: 1,
-        duration: 0.2,
+        duration: 0.3,
+        stagger: 0.05,
         ease: "power2.out",
       });
-
-      timeline.to(
-        socialIcons,
-        {
-          opacity: 1,
-          scale: 1,
-          x: 0,
-          duration: 0.4,
-          stagger: 0.08,
-          ease: "back.out(2)",
-        },
-        "-=0.1"
-      );
     }
   }
-
   function setupShareButtons() {
-    document.querySelectorAll(".ri-share-line").forEach((shareBtn) => {
+    document.querySelectorAll("[class*='ri-share']").forEach((shareBtn) => {
       if (shareBtn._shareSetup) return;
       shareBtn._shareSetup = true;
 

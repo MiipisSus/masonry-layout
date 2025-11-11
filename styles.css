@@ -399,33 +399,37 @@ body {
 }
 
 .interact-btn .social-btn {
-  display: none;
-  /* background-color: white; */
+  display: flex;
   border-radius: 15px;
-  padding: 5px 10px 5px 0;
+  padding: 5px;
   gap: 5px;
-  /* margin-left: 8px; */
+  justify-content: center;
   align-items: center;
+  text-align: center;
+  background-color: rgba(255, 255, 255, 0.5);
+  visibility: hidden;
 }
 
 .interact-btn .social-btn i {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #190f2c;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: transform 0.2s ease;
+  opacity: 0;
+  transform: translateX(-20px);
+
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);
 }
 
 .interact-btn .social-btn i:hover {
   transform: scale(1.1);
 }
 
-/* .interact-btn .social-btn i {
-  display: inline-block;
-  margin-left: 5px;
-  color: #190f2c;
-} */
+.social-btn .ri-facebook-box-fill {
+  color: #4267b2;
+}
+
+.social-btn .ri-twitter-fill {
+  color: #1da1f2;
+}
 
 /* === 文章資訊 === */
 .post-info {
