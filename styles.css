@@ -27,7 +27,8 @@
     #6228d7 100%
   );
   --instagram-pink: #e4405f;
-  --email-color: #34495e;
+  --email-color: #d44638;
+  --link-color: #686868;
 }
 
 /* === 基礎佈局 === */
@@ -512,7 +513,12 @@ body {
   transition: 0.5s;
 }
 
+.interact-btn .ri-links-line {
+  font-weight: 600;
+}
+
 .interact-btn .social-btn i:hover {
+  text-shadow: none;
   transform: scale(1.1);
 }
 
@@ -522,6 +528,10 @@ body {
 
 .social-btn .ri-twitter-fill:hover {
   color: var(--twitter-blue);
+}
+
+.social-btn .ri-links-line:hover {
+  color: rgb(104, 104, 104);
 }
 
 /* === 文章資訊 === */
