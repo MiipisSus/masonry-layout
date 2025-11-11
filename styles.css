@@ -454,17 +454,18 @@ body {
   opacity: 0;
 
   text-shadow: 0 0 3px rgba(0, 0, 0, 0.3);
+  transition: 0.5s;
 }
 
 .interact-btn .social-btn i:hover {
   transform: scale(1.1);
 }
 
-.social-btn .ri-facebook-box-fill {
+.social-btn .ri-facebook-box-fill:hover {
   color: #4267b2;
 }
 
-.social-btn .ri-twitter-fill {
+.social-btn .ri-twitter-fill:hover {
   color: #1da1f2;
 }
 
