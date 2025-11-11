@@ -48,7 +48,7 @@ body {
   width: var(--sidebar-width);
   height: 100vh;
   z-index: 100;
-  padding: 4em 2em;
+  padding: 4em 2em 2rem 2rem;
 }
 
 .profile-section {
@@ -129,6 +129,11 @@ body {
   gap: 0.3rem;
   font-family: poppins, sans-serif;
   text-decoration: none;
+  color: var(--grey);
+}
+
+.credit-section {
+  font-size: 0.7rem;
   color: var(--grey);
 }
 
