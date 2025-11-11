@@ -465,6 +465,11 @@ body {
   z-index: 10;
 }
 
+.image-container .gallery-btn i {
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.7);
+  cursor: pointer;
+}
+
 .image-container .interact-btn {
   position: absolute;
   bottom: 10px;
@@ -478,10 +483,7 @@ body {
 }
 
 .image-container .interact-btn i {
-  cursor: pointer;
-}
-
-.image-container .gallery-btn i {
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.7);
   cursor: pointer;
 }
 

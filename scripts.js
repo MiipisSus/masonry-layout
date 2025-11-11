@@ -311,6 +311,14 @@ document.addEventListener("DOMContentLoaded", function () {
           }</div>
           `;
           container.appendChild(galleryInfo);
+
+          const galleryBtn = document.createElement("div");
+          galleryBtn.className = "gallery-btn";
+          galleryBtn.innerHTML = `
+            <i class="ri-arrow-left-fill gallery-prev"></i>
+            <i class="ri-arrow-right-fill gallery-next"></i>
+          `;
+          container.appendChild(galleryBtn);
         }
       }
     }
