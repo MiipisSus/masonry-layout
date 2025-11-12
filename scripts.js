@@ -641,6 +641,8 @@ document.addEventListener("DOMContentLoaded", function () {
       ".image-container[data-gallery]"
     );
 
+    let isSingleImage = false;
+
     if (imageContainer) {
       // 多圖畫廊
       const galleryData = JSON.parse(imageContainer.dataset.gallery);
@@ -653,6 +655,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     } else {
       // 單張圖片
+      isSingleImage = true;
       const img = container.querySelector("img");
       if (img) {
         const overlayImg = document.createElement("img");
@@ -661,6 +664,13 @@ document.addEventListener("DOMContentLoaded", function () {
         overlayImg.alt = img.alt || "Image";
         overlayContent.appendChild(overlayImg);
       }
+    }
+
+    // 根據是否為單圖調整 overlay 樣式
+    if (isSingleImage) {
+      overlay.classList.add("single-image");
+    } else {
+      overlay.classList.remove("single-image");
     }
 
     // 顯示 overlay

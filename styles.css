@@ -596,6 +596,11 @@ body {
   overflow-y: auto;
 }
 
+.image-overlay.single-image {
+  align-items: center;
+  padding: 20px;
+}
+
 .overlay-content {
   display: flex;
   flex-direction: column;
@@ -603,6 +608,11 @@ body {
   max-width: 90vw;
   width: auto;
   align-items: center;
+}
+
+.image-overlay.single-image .overlay-content {
+  justify-content: center;
+  height: 100%;
 }
 
 .overlay-image {
@@ -613,6 +623,10 @@ body {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
   transform: translateY(100px);
   opacity: 0;
+}
+
+.image-overlay.single-image .overlay-image {
+  max-height: 90vh;
 }
 
 .overlay-close {
