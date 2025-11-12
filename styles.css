@@ -152,7 +152,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(25, 15, 44, 0.95);
+  background-color: var(--black);
   backdrop-filter: blur(10px);
   display: flex;
   justify-content: center;
