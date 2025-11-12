@@ -171,6 +171,7 @@ document.addEventListener("DOMContentLoaded", function () {
       setupAllButtonHoverEffects();
       setupShareButtons();
       setupLikeButton();
+      setupImageOverlayClick();
     }, containers.length * 50 + 100);
   }
   function loadBatch(batchIndex) {
@@ -282,6 +283,24 @@ document.addEventListener("DOMContentLoaded", function () {
       "mouseleave",
       targetElement._mouseleaveHandler
     );
+
+    // 設定 overlay 點擊事件
+    if (!container._overlaySetup) {
+      container._overlaySetup = true;
+      container.addEventListener("click", (e) => {
+        // 避免與其他按鈕衝突
+        if (
+          e.target.closest(".gallery-btn") ||
+          e.target.closest(".interact-btn") ||
+          e.target.classList.contains("gallery-prev") ||
+          e.target.classList.contains("gallery-next")
+        ) {
+          return;
+        }
+
+        showImageOverlay(container);
+      });
+    }
   }
 
   function setupHoverEffects() {
@@ -584,6 +603,132 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  function createImageOverlay() {
+    const overlay = document.createElement("div");
+    overlay.className = "image-overlay";
+    overlay.innerHTML = `
+      <div class="overlay-close">
+        <i class="ri-close-line"></i>
+      </div>
+      <div class="overlay-content"></div>
+    `;
+    document.body.appendChild(overlay);
+
+    // 點擊關閉按鈕或背景關閉 overlay
+    const closeBtn = overlay.querySelector(".overlay-close");
+    closeBtn.addEventListener("click", () => closeImageOverlay());
+
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) {
+        closeImageOverlay();
+      }
+    });
+
+    return overlay;
+  }
+
+  function showImageOverlay(container) {
+    let overlay = document.querySelector(".image-overlay");
+    if (!overlay) {
+      overlay = createImageOverlay();
+    }
+
+    const overlayContent = overlay.querySelector(".overlay-content");
+    overlayContent.innerHTML = "";
+
+    // 檢查是否為畫廊
+    const imageContainer = container.querySelector(
+      ".image-container[data-gallery]"
+    );
+
+    if (imageContainer) {
+      // 多圖畫廊
+      const galleryData = JSON.parse(imageContainer.dataset.gallery);
+      galleryData.forEach((imageSrc, index) => {
+        const img = document.createElement("img");
+        img.className = "overlay-image";
+        img.src = imageSrc;
+        img.alt = `Gallery image ${index + 1}`;
+        overlayContent.appendChild(img);
+      });
+    } else {
+      // 單張圖片
+      const img = container.querySelector("img");
+      if (img) {
+        const overlayImg = document.createElement("img");
+        overlayImg.className = "overlay-image";
+        overlayImg.src = img.src || img.dataset.src;
+        overlayImg.alt = img.alt || "Image";
+        overlayContent.appendChild(overlayImg);
+      }
+    }
+
+    // 顯示 overlay
+    overlay.style.display = "flex";
+
+    // 動畫效果：由下至上滑入
+    const images = overlayContent.querySelectorAll(".overlay-image");
+    gsap.to(overlay, {
+      opacity: 1,
+      duration: 0.3,
+      ease: "power2.out",
+    });
+
+    gsap.to(images, {
+      y: 0,
+      opacity: 1,
+      duration: 0.5,
+      stagger: 0.1,
+      ease: "power2.out",
+      delay: 0.1,
+    });
+  }
+
+  function closeImageOverlay() {
+    const overlay = document.querySelector(".image-overlay");
+    if (!overlay) return;
+
+    const images = overlay.querySelectorAll(".overlay-image");
+
+    gsap.to(images, {
+      y: 100,
+      opacity: 0,
+      duration: 0.3,
+      stagger: -0.05,
+      ease: "power2.in",
+    });
+
+    gsap.to(overlay, {
+      opacity: 0,
+      duration: 0.3,
+      delay: 0.2,
+      onComplete: () => {
+        overlay.style.display = "none";
+      },
+    });
+  }
+
+  function setupImageOverlayClick() {
+    document.querySelectorAll(".grid-wrapper > div").forEach((container) => {
+      if (container._overlaySetup) return;
+      container._overlaySetup = true;
+
+      container.addEventListener("click", (e) => {
+        // 避免與其他按鈕衝突
+        if (
+          e.target.closest(".gallery-btn") ||
+          e.target.closest(".interact-btn") ||
+          e.target.classList.contains("gallery-prev") ||
+          e.target.classList.contains("gallery-next")
+        ) {
+          return;
+        }
+
+        showImageOverlay(container);
+      });
+    });
+  }
+
   window.addNewImage = function (imageSrc, targetContainer) {
     const newDiv = document.createElement("div");
     const newImg = document.createElement("img");
@@ -649,6 +794,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setupGalleryControls();
     setupShareButtons();
     setupLikeButton();
+    setupImageOverlayClick();
   }
 
   initializeApp();
