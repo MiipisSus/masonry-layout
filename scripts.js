@@ -683,6 +683,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     overlay.style.display = "flex";
 
+    // 測試：只在 requestAnimationFrame 中重置（通常是最有效的時機）
+    requestAnimationFrame(() => {
+      overlay.scrollTop = 0;
+      overlay.scrollTo(0, 0);
+    });
+
     const images = overlayContent.querySelectorAll(".overlay-image");
     gsap.to(overlay, {
       opacity: 1,
@@ -720,6 +726,7 @@ document.addEventListener("DOMContentLoaded", function () {
       delay: 0.2,
       onComplete: () => {
         overlay.style.display = "none";
+        // 只保留基本的狀態清理，滾動重置交給開啟時處理
       },
     });
   }
