@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
+  gsap.registerPlugin(ScrollTrigger);
+
   const BATCH_SIZE = 20;
   const SCROLL_THRESHOLD = 300;
 
@@ -132,15 +134,24 @@ document.addEventListener("DOMContentLoaded", function () {
     const img = container.querySelector("img");
 
     if (img && img.dataset.src) {
+      container.classList.add("loading");
+
       const tempImg = new Image();
 
       tempImg.onload = function () {
+        const aspectRatio = tempImg.naturalHeight / tempImg.naturalWidth;
+        img.style.aspectRatio = `${tempImg.naturalWidth} / ${tempImg.naturalHeight}`;
+
         img.src = img.dataset.src;
+        container.classList.remove("loading");
+        container.classList.add("loaded");
+
         if (onComplete) onComplete();
       };
 
       tempImg.onerror = function () {
-        container.className = "error";
+        container.classList.remove("loading");
+        container.classList.add("error");
         if (onComplete) onComplete();
       };
 
@@ -152,9 +163,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function showBatch(containers) {
     containers.forEach((container, index) => {
+      container.style.display = "block";
+      container.classList.add("batch-reveal");
+
       setTimeout(() => {
-        container.style.display = "block";
-        container.classList.add("batch-reveal");
+        setupScrollTriggerAnimation(container);
         setupHoverEffectForContainer(container);
 
         const galleryContainer = container.querySelector(
@@ -164,7 +177,7 @@ document.addEventListener("DOMContentLoaded", function () {
           initializeGalleryContainer(galleryContainer);
           setupGalleryControlsForContainer(galleryContainer);
         }
-      }, index * 50);
+      }, index * 10);
     });
 
     setTimeout(() => {
@@ -172,7 +185,9 @@ document.addEventListener("DOMContentLoaded", function () {
       setupShareButtons();
       setupLikeButton();
       setupImageOverlayClick();
-    }, containers.length * 50 + 100);
+
+      ScrollTrigger.refresh();
+    }, containers.length * 10 + 100);
   }
   function loadBatch(batchIndex) {
     if (isLoadingBatch) return;
@@ -284,11 +299,9 @@ document.addEventListener("DOMContentLoaded", function () {
       targetElement._mouseleaveHandler
     );
 
-    // 設定 overlay 點擊事件
     if (!container._overlaySetup) {
       container._overlaySetup = true;
       container.addEventListener("click", (e) => {
-        // 避免與其他按鈕衝突
         if (
           e.target.closest(".gallery-btn") ||
           e.target.closest(".interact-btn") ||
@@ -614,7 +627,6 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
     document.body.appendChild(overlay);
 
-    // 點擊關閉按鈕或背景關閉 overlay
     const closeBtn = overlay.querySelector(".overlay-close");
     closeBtn.addEventListener("click", () => closeImageOverlay());
 
@@ -636,7 +648,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const overlayContent = overlay.querySelector(".overlay-content");
     overlayContent.innerHTML = "";
 
-    // 檢查是否為畫廊
     const imageContainer = container.querySelector(
       ".image-container[data-gallery]"
     );
@@ -644,7 +655,6 @@ document.addEventListener("DOMContentLoaded", function () {
     let isSingleImage = false;
 
     if (imageContainer) {
-      // 多圖畫廊
       const galleryData = JSON.parse(imageContainer.dataset.gallery);
       galleryData.forEach((imageSrc, index) => {
         const img = document.createElement("img");
@@ -654,7 +664,6 @@ document.addEventListener("DOMContentLoaded", function () {
         overlayContent.appendChild(img);
       });
     } else {
-      // 單張圖片
       isSingleImage = true;
       const img = container.querySelector("img");
       if (img) {
@@ -666,17 +675,14 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
 
-    // 根據是否為單圖調整 overlay 樣式
     if (isSingleImage) {
       overlay.classList.add("single-image");
     } else {
       overlay.classList.remove("single-image");
     }
 
-    // 顯示 overlay
     overlay.style.display = "flex";
 
-    // 動畫效果：由下至上滑入
     const images = overlayContent.querySelectorAll(".overlay-image");
     gsap.to(overlay, {
       opacity: 1,
@@ -718,13 +724,44 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
+  function setupScrollTriggerAnimation(container) {
+    container.classList.add("scroll-reveal");
+
+    ScrollTrigger.create({
+      trigger: container,
+      start: "top 85%",
+      end: "bottom 15%",
+      onEnter: () => {
+        gsap.to(container, {
+          opacity: 1,
+          y: 0,
+          duration: 0.8,
+          ease: "power2.out",
+        });
+      },
+      onLeave: () => {
+        gsap.to(container, {
+          opacity: 0.7,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      },
+      onEnterBack: () => {
+        gsap.to(container, {
+          opacity: 1,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      },
+    });
+  }
+
   function setupImageOverlayClick() {
     document.querySelectorAll(".grid-wrapper > div").forEach((container) => {
       if (container._overlaySetup) return;
       container._overlaySetup = true;
 
       container.addEventListener("click", (e) => {
-        // 避免與其他按鈕衝突
         if (
           e.target.closest(".gallery-btn") ||
           e.target.closest(".interact-btn") ||
@@ -738,7 +775,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   }
-
   window.addNewImage = function (imageSrc, targetContainer) {
     const newDiv = document.createElement("div");
     const newImg = document.createElement("img");
@@ -788,6 +824,7 @@ document.addEventListener("DOMContentLoaded", function () {
         img.dataset.src = img.src;
         img.src = "";
         container.style.display = "none";
+        container.classList.add("loading");
       }
     });
 
@@ -805,6 +842,8 @@ document.addEventListener("DOMContentLoaded", function () {
     setupShareButtons();
     setupLikeButton();
     setupImageOverlayClick();
+
+    ScrollTrigger.refresh();
   }
 
   initializeApp();

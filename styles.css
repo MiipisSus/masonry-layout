@@ -267,8 +267,22 @@ body {
   opacity: 0;
 }
 
+.grid-wrapper > div {
+  /* 防止版面跳動 */
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+.grid-wrapper > div.scroll-reveal {
+  opacity: 0;
+  transform: translateY(50px);
+}
+
 .grid-wrapper > div.loaded {
-  animation: fadeInUp 0.6s ease-out;
+  animation: none; /* 移除原有動畫，改用 ScrollTrigger */
 }
 
 .grid-wrapper > div.loaded img {
