@@ -98,6 +98,24 @@ body.no-scroll {
   transform: scale(1.1);
 }
 
+.menu-section .overlay {
+  position: fixed;
+  top: 3em;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(
+    to bottom,
+    rgba(21, 51, 55, 1),
+    rgba(21, 51, 55, 0.3)
+  );
+  z-index: 201;
+  transform: translateX(-100%);
+
+  .nav-section {
+    padding: 2rem;
+  }
+}
+
 .header {
   position: relative;
   padding-top: 3rem;
@@ -200,7 +218,7 @@ body.no-scroll {
 .nav-section a {
   display: flex;
   gap: 0.3rem;
-  font-family: poppins, sans-serif;
+  /* font-family: poppins, sans-serif; */
   text-decoration: none;
   color: var(--grey);
 }

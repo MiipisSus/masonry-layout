@@ -786,6 +786,39 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     });
   }
+
+  function setupMenuToggle() {
+    const menuTl = gsap.timeline({ paused: true });
+    menuTl
+      .to(".menu-section .overlay", {
+        x: "0%",
+        duration: 0.3,
+        ease: "power2.out",
+      })
+      .from(".menu-section .overlay a", {
+        opacity: 0,
+        x: -20,
+        duration: 0.3,
+        stagger: 0.1,
+        ease: "power2.out",
+      });
+
+    let isMenuOpen = false;
+    const menuButton = document.querySelector(".menu-section i");
+
+    if (menuButton) {
+      menuButton.addEventListener("click", () => {
+        if (isMenuOpen) {
+          menuTl.reverse();
+          isMenuOpen = false;
+        } else {
+          menuTl.play();
+          isMenuOpen = true;
+        }
+      });
+    }
+  }
+
   window.addNewImage = function (imageSrc, targetContainer) {
     const newDiv = document.createElement("div");
     const newImg = document.createElement("img");
@@ -853,6 +886,7 @@ document.addEventListener("DOMContentLoaded", function () {
     setupShareButtons();
     setupLikeButton();
     setupImageOverlayClick();
+    setupMenuToggle();
 
     ScrollTrigger.refresh();
     const menuSection = document.querySelector(".menu-section");
