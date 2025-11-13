@@ -167,7 +167,7 @@ document.addEventListener("DOMContentLoaded", function () {
       container.classList.add("batch-reveal");
 
       setTimeout(() => {
-        setupScrollTriggerAnimation(container);
+        setupMainContentAnimation(container);
         setupHoverEffectForContainer(container);
 
         const galleryContainer = container.querySelector(
@@ -735,7 +735,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function setupScrollTriggerAnimation(container) {
+  function setupMainContentAnimation(container) {
     container.classList.add("scroll-reveal");
 
     ScrollTrigger.create({
@@ -855,6 +855,41 @@ document.addEventListener("DOMContentLoaded", function () {
     setupImageOverlayClick();
 
     ScrollTrigger.refresh();
+    const menuSection = document.querySelector(".menu-section");
+    const menuAvatar = document.querySelector(".menu-section .avatar");
+
+    if (menuSection) {
+      ScrollTrigger.create({
+        trigger: document.querySelector(".header"),
+        start: "bottom top",
+        end: "bottom top",
+        markers: true,
+        onEnter: () => {
+          gsap.to(menuSection, {
+            boxShadow: "0 4px 24px rgba(0,0,0,0.5)",
+            duration: 0.3,
+            ease: "power2.out",
+          });
+          gsap.to(menuAvatar, {
+            opacity: 1,
+            duration: 0.5,
+            ease: "power2.out",
+          });
+        },
+        onLeaveBack: () => {
+          gsap.to(menuSection, {
+            boxShadow: "none",
+            duration: 0.3,
+            ease: "power2.out",
+          });
+          gsap.to(menuAvatar, {
+            opacity: 0,
+            duration: 0.5,
+            ease: "power2.out",
+          });
+        },
+      });
+    }
   }
 
   initializeApp();
