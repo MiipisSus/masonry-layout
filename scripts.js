@@ -645,6 +645,9 @@ document.addEventListener("DOMContentLoaded", function () {
       overlay = createImageOverlay();
     }
 
+    // 禁止背景滾動
+    document.body.classList.add("no-scroll");
+
     const overlayContent = overlay.querySelector(".overlay-content");
     overlayContent.innerHTML = "";
 
@@ -683,7 +686,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     overlay.style.display = "flex";
 
-    // 測試：只在 requestAnimationFrame 中重置（通常是最有效的時機）
+    // 重置 overlay 滾動位置
     requestAnimationFrame(() => {
       overlay.scrollTop = 0;
       overlay.scrollTo(0, 0);
@@ -726,7 +729,8 @@ document.addEventListener("DOMContentLoaded", function () {
       delay: 0.2,
       onComplete: () => {
         overlay.style.display = "none";
-        // 只保留基本的狀態清理，滾動重置交給開啟時處理
+        // 恢復背景滾動
+        document.body.classList.remove("no-scroll");
       },
     });
   }
