@@ -792,6 +792,15 @@ document.addEventListener("DOMContentLoaded", function () {
   function setupHeaderScrollTrigger() {
     const menuSection = document.querySelector(".menu-section");
     const menuAvatar = document.querySelector(".menu-section .avatar");
+    const menuSocialIcons = document.querySelectorAll(
+      ".menu-section .social-link i"
+    );
+    const tl = gsap.timeline({ paused: true });
+    tl.to(menuAvatar, { opacity: 1, duration: 0.4, ease: "power2.out" }).to(
+      menuSocialIcons,
+      { opacity: 1, duration: 0.3, stagger: 0.1, ease: "power2.out" },
+      "-=0.2"
+    );
 
     if (menuSection) {
       ScrollTrigger.create({
@@ -804,11 +813,7 @@ document.addEventListener("DOMContentLoaded", function () {
             duration: 0.3,
             ease: "power2.out",
           });
-          gsap.to(menuAvatar, {
-            opacity: 1,
-            duration: 0.5,
-            ease: "power2.out",
-          });
+          tl.play();
         },
         onLeaveBack: () => {
           gsap.to(menuSection, {
@@ -816,11 +821,7 @@ document.addEventListener("DOMContentLoaded", function () {
             duration: 0.3,
             ease: "power2.out",
           });
-          gsap.to(menuAvatar, {
-            opacity: 0,
-            duration: 0.5,
-            ease: "power2.out",
-          });
+          tl.reverse();
         },
       });
     }
