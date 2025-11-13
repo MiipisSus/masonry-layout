@@ -183,7 +183,7 @@ body.no-scroll {
 .social-link {
   display: flex;
   gap: 10px;
-  margin-bottom: 3rem;
+  margin-bottom: 1.5rem;
   font-size: var(--icon-size-medium);
   color: var(--grey);
 }
@@ -245,6 +245,13 @@ body.no-scroll {
   /* font-family: poppins, sans-serif; */
   text-decoration: none;
   color: var(--grey);
+}
+
+.bio-section {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: var(--button-font-size);
+  color: var(--dark-grey);
 }
 
 .credit-section {
