@@ -13,16 +13,13 @@
   --avatar-size: clamp(100px, 60%, 150px);
   --sidebar-padding: 40px 30px;
 
-  /* 響應式字體和圖示大小 */
   --base-font-size: clamp(11px, 1.2vw, 13px);
-  --icon-size-small: clamp(13px, 1.5vw, 17px);
   --icon-size-medium: clamp(17px, 2vw, 21px);
   --icon-size-large: clamp(21px, 2.5vw, 29px);
-  --button-font-size: clamp(9px, 1vw, 11px);
+  --button-font-size: clamp(11px, 1vw, 11px);
   --heading-size: clamp(15px, 2.2vw, 21px);
-}
 
-:root {
+  /* 色彩主題 */
   --black: #153337;
   --light-blue: #87bbc9;
   --grey: #efece3;
@@ -44,6 +41,26 @@ html,
 body {
   background-color: var(--black);
   min-height: 100vh;
+}
+
+.header {
+  position: relative;
+  padding-top: 3rem;
+
+  color: var(--grey);
+}
+
+.header .menu-section i {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.header h2 {
+  margin-bottom: 1rem;
 }
 
 /* === 側邊欄 === */
@@ -224,14 +241,6 @@ body {
   margin: 0 auto;
   padding: 0;
 
-  @media (min-width: 640px) {
-    column-count: 2;
-  }
-
-  @media (min-width: 960px) {
-    column-count: 3;
-  }
-
   > div {
     display: block;
     width: 100%;
@@ -329,27 +338,6 @@ body {
 
 .batch-reveal {
   animation: batchFadeIn 0.6s ease-out;
-}
-
-/* === 響應式設計 === */
-@media (min-width: 640px) {
-  .grid-wrapper {
-    column-count: 2;
-  }
-
-  .post-info .tag {
-    font-size: 0.65rem;
-  }
-}
-
-@media (min-width: 960px) {
-  .grid-wrapper {
-    column-count: 3;
-  }
-
-  .post-info .tag {
-    font-size: 0.75rem;
-  }
 }
 
 /* === 動畫效果 === */
@@ -614,7 +602,7 @@ body {
   display: none;
   justify-content: center;
   align-items: flex-start;
-  padding: 40px 20px;
+  padding: 5rem 5.5rem;
   overflow-y: auto;
   /* 隱藏滾動條 */
   scrollbar-width: none; /* Firefox */
@@ -627,7 +615,6 @@ body {
 
 .image-overlay.single-image {
   align-items: center;
-  padding: 20px;
 }
 
 .overlay-content {
@@ -677,34 +664,11 @@ body {
 }
 
 /* === 響應式媒體查詢 === */
-@media (max-width: 768px) {
-  :root {
-    --icon-size-small: 11px;
-    --icon-size-medium: 15px;
-    --icon-size-large: 19px;
-    --button-font-size: 8px;
-    --heading-size: 13px;
-  }
 
-  .image-container .gallery-btn,
-  .image-container .interact-btn {
-    gap: 8px;
-  }
-
-  .overlay-close {
-    top: 15px;
-    right: 15px;
-    padding: 8px;
-  }
-}
-
+/* 小手機 (≤480px) */
 @media (max-width: 480px) {
-  :root {
-    --icon-size-small: 9px;
-    --icon-size-medium: 13px;
-    --icon-size-large: 17px;
-    --button-font-size: 7px;
-    --heading-size: 11px;
+  .grid-wrapper {
+    column-count: 1;
   }
 
   .image-container .gallery-btn,
@@ -721,14 +685,81 @@ body {
     bottom: 8px;
     left: 8px;
   }
+
+  .overlay-close {
+    top: 15px;
+    right: 15px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 600px) {
+  .side-bar {
+    display: none;
+  }
+
+  .main-content {
+    margin: 0 2rem;
+  }
+
+  /* .image-overlay {
+    padding-top: 5rem;
+  } */
+}
+
+@media (min-width: 601px) {
+  .header {
+    display: none;
+  }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+  .grid-wrapper {
+    column-count: 2;
+  }
+
+  .image-container .gallery-btn,
+  .image-container .interact-btn {
+    gap: 8px;
+  }
+
+  .overlay-close {
+    top: 15px;
+    right: 15px;
+    padding: 8px;
+  }
+
+  .post-info .tag {
+    font-size: 0.65rem;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 959px) {
+  .grid-wrapper {
+    column-count: 2;
+  }
+
+  .post-info .tag {
+    font-size: 0.7rem;
+  }
+}
+
+@media (min-width: 960px) and (max-width: 1919px) {
+  .grid-wrapper {
+    column-count: 3;
+  }
+
+  .post-info .tag {
+    font-size: 0.75rem;
+  }
 }
 
 @media (min-width: 1920px) {
-  :root {
-    --icon-size-small: 19px;
-    --icon-size-medium: 25px;
-    --icon-size-large: 33px;
-    --button-font-size: 13px;
-    --heading-size: 25px;
+  .grid-wrapper {
+    column-count: 3;
+  }
+
+  .post-info .tag {
+    font-size: 0.8rem;
   }
 }
