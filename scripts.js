@@ -819,6 +819,43 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function setupHeaderScrollTrigger() {
+    const menuSection = document.querySelector(".menu-section");
+    const menuAvatar = document.querySelector(".menu-section .avatar");
+
+    if (menuSection) {
+      ScrollTrigger.create({
+        trigger: document.querySelector(".header"),
+        start: "bottom top",
+        end: "bottom top",
+        onEnter: () => {
+          gsap.to(menuSection, {
+            boxShadow: "0 4px 24px rgba(0,0,0,0.5)",
+            duration: 0.3,
+            ease: "power2.out",
+          });
+          gsap.to(menuAvatar, {
+            opacity: 1,
+            duration: 0.5,
+            ease: "power2.out",
+          });
+        },
+        onLeaveBack: () => {
+          gsap.to(menuSection, {
+            boxShadow: "none",
+            duration: 0.3,
+            ease: "power2.out",
+          });
+          gsap.to(menuAvatar, {
+            opacity: 0,
+            duration: 0.5,
+            ease: "power2.out",
+          });
+        },
+      });
+    }
+  }
+
   window.addNewImage = function (imageSrc, targetContainer) {
     const newDiv = document.createElement("div");
     const newImg = document.createElement("img");
@@ -886,43 +923,38 @@ document.addEventListener("DOMContentLoaded", function () {
     setupShareButtons();
     setupLikeButton();
     setupImageOverlayClick();
+    setupHeaderScrollTrigger();
     setupMenuToggle();
 
     ScrollTrigger.refresh();
-    const menuSection = document.querySelector(".menu-section");
-    const menuAvatar = document.querySelector(".menu-section .avatar");
 
-    if (menuSection) {
-      ScrollTrigger.create({
-        trigger: document.querySelector(".header"),
-        start: "bottom top",
-        end: "bottom top",
-        onEnter: () => {
-          gsap.to(menuSection, {
-            boxShadow: "0 4px 24px rgba(0,0,0,0.5)",
-            duration: 0.3,
-            ease: "power2.out",
-          });
-          gsap.to(menuAvatar, {
-            opacity: 1,
-            duration: 0.5,
-            ease: "power2.out",
-          });
-        },
-        onLeaveBack: () => {
-          gsap.to(menuSection, {
-            boxShadow: "none",
-            duration: 0.3,
-            ease: "power2.out",
-          });
-          gsap.to(menuAvatar, {
-            opacity: 0,
-            duration: 0.5,
-            ease: "power2.out",
-          });
-        },
+    const menuOverlayNavLinks = document.querySelectorAll(
+      ".menu-section .overlay a"
+    );
+    const navIndicator = document.querySelector(
+      ".menu-section .overlay .indicator"
+    );
+
+    menuOverlayNavLinks.forEach((link) => {
+      link.addEventListener("mouseenter", () => {
+        gsap.to(navIndicator, {
+          y:
+            link.offsetTop +
+            link.offsetHeight / 2 -
+            navIndicator.offsetHeight / 2,
+          opacity: 1,
+          duration: 0.3,
+          ease: "power2.out",
+        });
       });
-    }
+      link.addEventListener("mouseleave", () => {
+        gsap.to(navIndicator, {
+          opacity: 0,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      });
+    });
   }
 
   initializeApp();

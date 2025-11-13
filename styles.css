@@ -111,8 +111,18 @@ body.no-scroll {
   z-index: 201;
   transform: translateX(-100%);
 
+  .indicator {
+    position: absolute;
+    left: 1.2rem;
+    top: 0;
+  }
+
   .nav-section {
     padding: 2rem;
+  }
+
+  .tags a {
+    padding: 0.5rem;
   }
 }
 
