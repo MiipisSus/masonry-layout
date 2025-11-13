@@ -23,6 +23,7 @@
   --black: #153337;
   --light-blue: #87bbc9;
   --grey: #efece3;
+  --dark-grey: #b0aead;
   --facebook-blue: #4267b2;
   --twitter-blue: #1da1f2;
   --instagram-gradient: linear-gradient(
@@ -115,6 +116,7 @@ body.no-scroll {
     position: absolute;
     left: 1.2rem;
     top: 0;
+    opacity: 0;
   }
 
   .nav-section {
@@ -186,6 +188,11 @@ body.no-scroll {
   color: var(--grey);
 }
 
+.social-link hr {
+  border: none;
+  border-left: 1px solid var(--dark-grey);
+}
+
 .social-link i {
   cursor: pointer;
   transition: transform 0.2s ease;
@@ -215,8 +222,15 @@ body.no-scroll {
   color: var(--email-color);
 }
 
-.nav-section {
+.side-bar .nav-section {
+  position: relative;
   flex: 1;
+
+  .indicator {
+    color: var(--dark-grey);
+    position: absolute;
+    left: -15px;
+  }
 }
 
 .nav-section > div {
