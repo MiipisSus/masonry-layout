@@ -12,6 +12,14 @@
   --sidebar-width: clamp(200px, 20%, 300px);
   --avatar-size: clamp(100px, 60%, 150px);
   --sidebar-padding: 40px 30px;
+
+  /* 響應式字體和圖示大小 */
+  --base-font-size: clamp(11px, 1.2vw, 13px);
+  --icon-size-small: clamp(13px, 1.5vw, 17px);
+  --icon-size-medium: clamp(17px, 2vw, 21px);
+  --icon-size-large: clamp(21px, 2.5vw, 29px);
+  --button-font-size: clamp(9px, 1vw, 11px);
+  --heading-size: clamp(15px, 2.2vw, 21px);
 }
 
 :root {
@@ -73,7 +81,7 @@ body {
 
 .side-bar h2 {
   color: var(--grey);
-  font-size: 1.5rem;
+  font-size: var(--heading-size);
   font-weight: 600;
   margin-bottom: 1rem;
 }
@@ -82,7 +90,7 @@ body {
   display: flex;
   gap: 10px;
   margin-bottom: 3rem;
-  font-size: 1.2rem;
+  font-size: var(--icon-size-medium);
   color: var(--grey);
 }
 
@@ -134,7 +142,7 @@ body {
 }
 
 .credit-section {
-  font-size: 0.7rem;
+  font-size: var(--button-font-size);
   color: var(--grey);
 }
 
@@ -460,11 +468,11 @@ body {
   z-index: 10;
 
   i {
-    font-size: 1.5rem;
+    font-size: var(--icon-size-medium);
   }
 
   .gallery-counter {
-    font-size: 1rem;
+    font-size: var(--button-font-size);
     cursor: default;
   }
 }
@@ -476,7 +484,7 @@ body {
   display: flex;
   gap: 10px;
   align-items: center;
-  font-size: 1.2rem;
+  font-size: var(--icon-size-medium);
   opacity: 0;
   z-index: 10;
 }
@@ -493,7 +501,7 @@ body {
   display: flex;
   gap: 10px;
   align-items: center;
-  font-size: 1.2rem;
+  font-size: var(--icon-size-medium);
   opacity: 0;
   z-index: 10;
 }
@@ -556,14 +564,14 @@ body {
 }
 
 .post-info .upload-date {
-  font-size: 0.8rem;
+  font-size: var(--button-font-size);
   color: #666;
   margin-bottom: 6px;
   font-family: "PT Mono", monospace;
 }
 
 .post-info .tag {
-  font-size: 0.75rem;
+  font-size: var(--button-font-size);
   color: var(--grey);
   border-radius: 12px;
 }
@@ -654,7 +662,7 @@ body {
   position: fixed;
   top: 20px;
   right: 20px;
-  font-size: 2rem;
+  font-size: var(--icon-size-large);
   color: white;
   cursor: pointer;
   z-index: 1001;
@@ -666,4 +674,61 @@ body {
 
 .overlay-close:hover {
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* === 響應式媒體查詢 === */
+@media (max-width: 768px) {
+  :root {
+    --icon-size-small: 11px;
+    --icon-size-medium: 15px;
+    --icon-size-large: 19px;
+    --button-font-size: 8px;
+    --heading-size: 13px;
+  }
+
+  .image-container .gallery-btn,
+  .image-container .interact-btn {
+    gap: 8px;
+  }
+
+  .overlay-close {
+    top: 15px;
+    right: 15px;
+    padding: 8px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --icon-size-small: 9px;
+    --icon-size-medium: 13px;
+    --icon-size-large: 17px;
+    --button-font-size: 7px;
+    --heading-size: 11px;
+  }
+
+  .image-container .gallery-btn,
+  .image-container .interact-btn {
+    gap: 6px;
+  }
+
+  .image-container .gallery-btn {
+    right: 8px;
+    top: 8px;
+  }
+
+  .image-container .interact-btn {
+    bottom: 8px;
+    left: 8px;
+  }
+}
+
+@media (min-width: 1920px) {
+  :root {
+    --icon-size-small: 19px;
+    --icon-size-medium: 25px;
+    --icon-size-large: 33px;
+    --button-font-size: 13px;
+    --heading-size: 25px;
+  }
 }
