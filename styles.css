@@ -255,6 +255,7 @@ body.no-scroll {
     color: var(--dark-grey);
     position: absolute;
     left: -15px;
+    opacity: 0;
   }
 }
 

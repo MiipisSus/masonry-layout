@@ -774,7 +774,7 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
     let isMenuOpen = false;
-    const menuButton = document.querySelector(".menu-section i");
+    const menuButton = document.querySelector(".menu-section .right-side");
 
     if (menuButton) {
       menuButton.addEventListener("click", () => {
