@@ -863,7 +863,6 @@ document.addEventListener("DOMContentLoaded", function () {
         trigger: document.querySelector(".header"),
         start: "bottom top",
         end: "bottom top",
-        markers: true,
         onEnter: () => {
           gsap.to(menuSection, {
             boxShadow: "0 4px 24px rgba(0,0,0,0.5)",
