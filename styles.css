@@ -747,13 +747,13 @@ body.no-scroll {
   .main-content {
     padding: 0 2rem;
   }
-
-  /* .image-overlay {
-    padding-top: 5rem;
-  } */
 }
 
 @media (min-width: 601px) {
+  .menu-section {
+    display: none;
+  }
+
   .header {
     display: none;
   }
