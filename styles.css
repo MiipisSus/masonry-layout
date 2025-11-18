@@ -601,6 +601,10 @@ body.no-scroll {
 .image-container .gallery-btn i {
   text-shadow: 0 0 3px rgba(0, 0, 0, 0.7);
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.image-container .gallery-btn i:hover {
+  transform: scale(1.2);
 }
 
 .image-container .interact-btn {
@@ -618,6 +622,11 @@ body.no-scroll {
 .image-container .interact-btn i {
   text-shadow: 0 0 3px rgba(0, 0, 0, 0.7);
   cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.image-container .interact-btn i:hover {
+  transform: scale(1.2);
 }
 
 .interact-btn .social-btn {
