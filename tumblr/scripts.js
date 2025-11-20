@@ -482,6 +482,10 @@ document.addEventListener("DOMContentLoaded", function () {
       
       newContainers.forEach(container => {
         const clonedContainer = container.cloneNode(true);
+        // 移除 like_button 內的 iframe，讓 Tumblr 重新生成
+        clonedContainer.querySelectorAll('.like_button').forEach(likeBtn => {
+          likeBtn.querySelectorAll('iframe').forEach(iframe => iframe.remove());
+        });
         gridWrapper.appendChild(clonedContainer);
         newElements.push(clonedContainer);
       });
@@ -497,32 +501,34 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       
       imageContainers = document.querySelectorAll('.grid-wrapper > div');
-      
+
       let loadedCount = 0;
       const totalNew = newElements.length;
-      
+
       newElements.forEach(container => {
         loadImage(container, () => {
           loadedCount++;
           if (loadedCount === totalNew) {
+            // 讓 Tumblr 重新生成 like 按鈕 iframe
+            setTimeout(() => {
+              if (window.Tumblr && window.Tumblr.LikeButton && typeof window.Tumblr.LikeButton.init === 'function') {
+                window.Tumblr.LikeButton.init();
+              }
+            }, 300);
             showBatch(newElements);
             isLoadingPage = false;
             hideBatchLoading();
-            
             newElements.forEach(el => {
               setupHoverEffectForContainer(el);
-              
               const imageContainer = el.querySelector('.image-container[data-gallery]');
               if (imageContainer) {
                 setupGalleryControlsForContainer(imageContainer);
                 initializeGalleryContainer(imageContainer);
               }
             });
-            
             setupShareButtons();
             setupLinkButtons();
             setupLikeButton();
-            
             ScrollTrigger.refresh();
           }
         });
