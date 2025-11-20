@@ -922,7 +922,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ease: "power2.out",
       });
     let isMenuOpen = false;
-    const menuButton = document.querySelector(".menu-section .right-side");
+    const menuButton = document.querySelector(".menu-section .ri-menu-line");
     if (menuButton) {
       menuButton.addEventListener("click", () => {
         if (isMenuOpen) {
@@ -973,7 +973,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   function setupNavigationIndicators() {
     const menuOverlayNavLinks = document.querySelectorAll(
-      ".menu-section .overlay a"
+      ".menu-section .overlay .tags a"
     );
     const navIndicator = document.querySelector(
       ".menu-section .overlay .indicator"
