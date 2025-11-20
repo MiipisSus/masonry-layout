@@ -1185,11 +1185,11 @@ a {
                 {/block:Photo}
                 
                 {block:Photoset}
-                <div class="image-container" data-gallery='[{block:Photos}"{PhotoURL-1280}"{block:Photos}, {/block:Photos}{/block:Photos}]' data-current-index="0">
+                <div class="image-container" data-gallery='[{block:Photos}"{PhotoURL-1280}"{block:Photos},{/block:Photos}{/block:Photos}]' data-current-index="0">
                     {block:Photos}
-                    {block:IndexPage}
-                    <img class="gallery-image" src="{PhotoURL-1280}" alt="Gallery image" style="aspect-ratio: {PhotoWidth} / {PhotoHeight}; translate: none; rotate: none; scale: none; transform: translate(0px);">
-                    {/block:IndexPage}
+                    {block:Photo1}
+                    <img class="gallery-image" src="{PhotoURL-1280}" alt="Gallery image" data-src="{PhotoURL-1280}" style="aspect-ratio: {PhotoWidth} / {PhotoHeight}; translate: none; rotate: none; scale: none; transform: translate(0px);">
+                    {/block:Photo1}
                     {/block:Photos}
                     <div class="gallery-info">
                         <i class="ri-image-2-line"></i>

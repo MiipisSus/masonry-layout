@@ -768,22 +768,36 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!overlay) {
       overlay = createImageOverlay();
     }
+    
+    // 保存當前滾動位置
+    const scrollY = window.scrollY;
+    document.body.style.top = `-${scrollY}px`;
     document.body.classList.add("no-scroll");
+    
     const overlayContent = overlay.querySelector(".overlay-content");
     overlayContent.innerHTML = "";
-    const imageContainer = container.querySelector(
-      ".image-container[data-gallery]"
-    );
+    
+    // 尋找畫廊容器：可能是子元素，也可能是容器本身
+    let imageContainer = container.querySelector(".image-container[data-gallery]");
+    if (!imageContainer && container.classList.contains("image-container") && container.hasAttribute("data-gallery")) {
+      imageContainer = container;
+    }
+    
     let isSingleImage = false;
-    if (imageContainer) {
-      const galleryData = JSON.parse(imageContainer.dataset.gallery);
-      galleryData.forEach((imageSrc, index) => {
-        const img = document.createElement("img");
-        img.className = "overlay-image";
-        img.src = imageSrc;
-        img.alt = `Gallery image ${index + 1}`;
-        overlayContent.appendChild(img);
-      });
+    if (imageContainer && imageContainer.hasAttribute("data-gallery")) {
+      const galleryData = parseGalleryData(imageContainer.dataset.gallery);
+      if (galleryData && galleryData.length > 0) {
+        galleryData.forEach((imageSrc, index) => {
+          const img = document.createElement("img");
+          img.className = "overlay-image";
+          img.src = imageSrc;
+          img.alt = `Gallery image ${index + 1}`;
+          overlayContent.appendChild(img);
+        });
+      } else {
+        console.warn('無效的 gallery 資料');
+        return;
+      }
     } else {
       isSingleImage = true;
       const img = container.querySelector("img");
@@ -795,16 +809,19 @@ document.addEventListener("DOMContentLoaded", function () {
         overlayContent.appendChild(overlayImg);
       }
     }
+    
     if (isSingleImage) {
       overlay.classList.add("single-image");
     } else {
       overlay.classList.remove("single-image");
     }
+    
     overlay.style.display = "flex";
     requestAnimationFrame(() => {
       overlay.scrollTop = 0;
       overlay.scrollTo(0, 0);
     });
+    
     const images = overlayContent.querySelectorAll(".overlay-image");
     gsap.to(overlay, {
       opacity: 1,
@@ -823,6 +840,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function closeImageOverlay() {
     const overlay = document.querySelector(".image-overlay");
     if (!overlay) return;
+    
     const images = overlay.querySelectorAll(".overlay-image");
     gsap.to(images, {
       y: 100,
@@ -837,7 +855,19 @@ document.addEventListener("DOMContentLoaded", function () {
       delay: 0.2,
       onComplete: () => {
         overlay.style.display = "none";
+        
+        // 保存滾動位置
+        const scrollY = document.body.style.top;
+        const scrollPos = parseInt(scrollY || '0') * -1;
+        
+        // 先移除樣式，再移除類別
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
         document.body.classList.remove("no-scroll");
+        
+        // 立即恢復滾動位置
+        window.scrollTo(0, scrollPos);
       },
     });
   }
@@ -875,15 +905,24 @@ document.addEventListener("DOMContentLoaded", function () {
     document.querySelectorAll(".grid-wrapper > div").forEach((container) => {
       if (container._overlaySetup) return;
       container._overlaySetup = true;
+      
       container.addEventListener("click", (e) => {
+        // 檢查是否點擊了不該觸發 overlay 的元素
         if (
           e.target.closest(".gallery-btn") ||
+          e.target.closest(".gallery-prev") ||
+          e.target.closest(".gallery-next") ||
           e.target.closest(".interact-btn") ||
+          e.target.closest(".like-btn") ||
+          e.target.closest(".reblog-btn") ||
+          e.target.closest(".share-btn") ||
+          e.target.closest(".social-btn") ||
           e.target.classList.contains("gallery-prev") ||
           e.target.classList.contains("gallery-next")
         ) {
           return;
         }
+        
         showImageOverlay(container);
       });
     });
