@@ -252,32 +252,45 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   function initializeGalleryContainer(container) {
     const img = container.querySelector(".gallery-image");
-    if (!img) return;
+    if (!img) {
+      console.warn('initializeGalleryContainer: 找不到 gallery-image');
+      return;
+    }
+    
     const galleryData = container.dataset.gallery;
     if (galleryData) {
-      const gallery = JSON.parse(galleryData);
+      const gallery = parseGalleryData(galleryData);
+      if (!gallery) {
+        console.error('initializeGalleryContainer: 無法解析 gallery 資料');
+        return;
+      }
+      
+      // 更新 dataset 為清理後的 JSON
+      container.dataset.gallery = JSON.stringify(gallery);
+      
       if (gallery.length > 1) {
         if (!container.querySelector(".gallery-info")) {
           const currentIndex = parseInt(container.dataset.currentIndex) || 0;
           const galleryInfo = document.createElement("div");
           galleryInfo.className = "gallery-info";
           galleryInfo.innerHTML = `
-            <i class="ri-multi-image-fill"></i>
-            <div class="gallery-counter">${currentIndex + 1}/${
-            gallery.length
-          }</div>
+            <i class="ri-image-2-line"></i>
+            <span class="gallery-counter">${currentIndex + 1} / ${gallery.length}</span>
           `;
           container.appendChild(galleryInfo);
+          
           const galleryBtn = document.createElement("div");
           galleryBtn.className = "gallery-btn";
           galleryBtn.innerHTML = `
-            <i class="ri-arrow-left-fill gallery-prev"></i>
-            <i class="ri-arrow-right-fill gallery-next"></i>
+            <i class="ri-arrow-left-s-line gallery-prev"></i>
+            <i class="ri-arrow-right-s-line gallery-next"></i>
           `;
           container.appendChild(galleryBtn);
         }
       }
     }
+    
+    // 設置初始容器高度 - 從 data-src 載入
     const tempImg = new Image();
     tempImg.onload = () => {
       const aspectRatio = tempImg.naturalHeight / tempImg.naturalWidth;
@@ -288,14 +301,20 @@ document.addEventListener("DOMContentLoaded", function () {
         zIndex: "auto",
       });
     };
-    tempImg.src = img.src;
+    tempImg.onerror = () => {
+      console.error('initializeGalleryContainer: 圖片載入失敗', img.dataset.src || img.src);
+      // 設置預設高度
+      container.style.setProperty("--gallery-padding-bottom", "56.25%");
+    };
+    // 從 data-src 或 src 載入
+    tempImg.src = img.dataset.src || img.src;
   }
   function updateGalleryCounter(container, currentIndex, totalCount) {
     const galleryCounter = container.querySelector(
       ".gallery-info .gallery-counter"
     );
     if (galleryCounter) {
-      galleryCounter.textContent = `${currentIndex + 1}/${totalCount}`;
+      galleryCounter.textContent = `${currentIndex + 1} / ${totalCount}`;
     }
   }
   function isContainerInHoverState(container) {
