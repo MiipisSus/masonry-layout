@@ -133,6 +133,11 @@ a {
   height: 2rem;
   overflow: hidden;
   opacity: 0;
+  cursor: pointer;
+}
+
+.menu-section .avatar:hover img {
+  transform: scale(1.1);
 }
 
 .menu-section .ri-menu-line {
@@ -238,12 +243,24 @@ a {
   height: var(--avatar-size);
   overflow: hidden;
   margin-bottom: 2rem;
+  cursor: pointer;
+  display: block;
 }
 
 .avatar img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.side-bar .avatar:hover img,
+.header .avatar:hover img {
+  transform: scale(1.05);
+}
+
+.menu-section .avatar:hover img {
+  transform: scale(1.1);
 }
 
 .side-bar h2 {
@@ -1016,9 +1033,9 @@ a {
 <body>
     <div class="menu-section">
         <div class="left-side">
-            <div class="avatar">
+            <a href="/" class="avatar">
                 <img src="https://picsum.photos/100/100?random=999" />
-            </div>
+            </a>
             <div class="social-link">
                 {block:IfShowFacebook}
                 <a class="ri-facebook-box-fill" 
@@ -1076,9 +1093,9 @@ a {
     </div>
     <div class="header">
         <div class="profile-section">
-            <div class="avatar">
+            <a href="/" class="avatar">
                 <img src="{PortraitURL-128}" />
-            </div>
+            </a>
             <h2>{Title}</h2>
             <div class="social-link">
                 <hr>
@@ -1107,9 +1124,9 @@ a {
     </div>
     <div class="side-bar">
         <div class="profile-section">
-            <div class="avatar">
+            <a href="/" class="avatar">
                 <img src="{PortraitURL-128}" />
-            </div>
+            </a>
             <h2>{Title}</h2>
             <div class="social-link">
                 <hr>
