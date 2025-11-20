@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
   let scrollTimeout;
   let imageContainers = document.querySelectorAll(".grid-wrapper > div");
   
-  // Tumblr åˆ†é ç³»çµ±è®Šæ•¸
   let currentPage = 1;
   let isLoadingPage = false;
   let hasMorePages = true;
@@ -98,19 +97,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
   function setupAllButtonHoverEffects() {}
   
-  // 清理並解析 data-gallery JSON
   function parseGalleryData(galleryDataString) {
     if (!galleryDataString) return null;
     try {
-      // 修復 Tumblr 模板可能產生的 JSON 錯誤：
-      // 1. 移除多餘的逗號和空格：["url1","url2", ] -> ["url1","url2"]
-      // 2. 修復缺少逗號：["url1""url2"] -> ["url1","url2"]
       let cleaned = galleryDataString
-        .replace(/,\s*]/g, ']')  // 移除結尾逗號
-        .replace(/"\s*"/g, '","');  // 修復缺少的逗號
+        .replace(/,\s*]/g, ']')  
+        .replace(/"\s*"/g, '","');
       return JSON.parse(cleaned);
     } catch (e) {
-      console.error('解析 gallery 資料失敗:', galleryDataString, e);
       return null;
     }
   }
@@ -253,7 +247,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function initializeGalleryContainer(container) {
     const img = container.querySelector(".gallery-image");
     if (!img) {
-      console.warn('initializeGalleryContainer: 找不到 gallery-image');
       return;
     }
     
@@ -261,11 +254,9 @@ document.addEventListener("DOMContentLoaded", function () {
     if (galleryData) {
       const gallery = parseGalleryData(galleryData);
       if (!gallery) {
-        console.error('initializeGalleryContainer: 無法解析 gallery 資料');
         return;
       }
       
-      // 更新 dataset 為清理後的 JSON
       container.dataset.gallery = JSON.stringify(gallery);
       
       if (gallery.length > 1) {
@@ -290,7 +281,6 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     }
     
-    // 設置初始容器高度 - 從 data-src 載入
     const tempImg = new Image();
     tempImg.onload = () => {
       const aspectRatio = tempImg.naturalHeight / tempImg.naturalWidth;
@@ -302,11 +292,8 @@ document.addEventListener("DOMContentLoaded", function () {
       });
     };
     tempImg.onerror = () => {
-      console.error('initializeGalleryContainer: 圖片載入失敗', img.dataset.src || img.src);
-      // 設置預設高度
       container.style.setProperty("--gallery-padding-bottom", "56.25%");
     };
-    // 從 data-src 或 src 載入
     tempImg.src = img.dataset.src || img.src;
   }
   function updateGalleryCounter(container, currentIndex, totalCount) {
@@ -371,7 +358,6 @@ document.addEventListener("DOMContentLoaded", function () {
   function changeGalleryImage(container, direction) {
     const gallery = parseGalleryData(container.dataset.gallery);
     if (!gallery) {
-      console.error('無法解析 gallery 資料');
       return;
     }
     
@@ -387,7 +373,6 @@ document.addEventListener("DOMContentLoaded", function () {
     
     const currentImg = container.querySelector(".gallery-image");
     if (!currentImg) {
-      console.warn('找不到當前圖片');
       return;
     }
     
@@ -395,10 +380,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const parentContainer = container.closest(".grid-wrapper > div");
     const isHovered = parentContainer && isContainerInHoverState(parentContainer);
     
-    // 預載圖片
     const tempImg = new Image();
     tempImg.onload = () => {
-      // 不改變容器高度，保持第一張圖片設定的高度
       const newImg = createNewGalleryImage(
         gallery[currentIndex],
         slideDirection,
@@ -411,7 +394,6 @@ document.addEventListener("DOMContentLoaded", function () {
       animateGalleryTransition(currentImg, newImg, slideDirection);
     };
     tempImg.onerror = () => {
-      console.error('圖片載入失敗:', gallery[currentIndex]);
     };
     tempImg.src = gallery[currentIndex];
   }
@@ -442,7 +424,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
   function handleScroll() {
-    // 如果 overlay 打開或 body 被鎖定，不執行滾動加載
     const overlay = document.querySelector(".image-overlay");
     if ((overlay && overlay.style.display === "flex") || document.body.classList.contains("no-scroll")) {
       return;
@@ -451,16 +432,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const scrollPosition = window.scrollY + window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
     
-    // æª¢æŸ¥æ˜¯å¦éœ€è¦è¼‰å…¥å·²å­˜åœ¨çš„æ‰¹æ¬¡
     if (
       scrollPosition >= documentHeight - SCROLL_THRESHOLD &&
       !isLoadingBatch &&
       currentBatchIndex * BATCH_SIZE < imageContainers.length
     ) {
-      console.log('è¼‰å…¥æ‰¹æ¬¡:', currentBatchIndex);
       loadBatch(currentBatchIndex);
     }
-    // æª¢æŸ¥æ˜¯å¦éœ€è¦è¼‰å…¥æ–°é é¢
+
     else if (
       scrollPosition >= documentHeight - SCROLL_THRESHOLD &&
       !isLoadingBatch &&
@@ -468,28 +447,17 @@ document.addEventListener("DOMContentLoaded", function () {
       hasMorePages &&
       currentBatchIndex * BATCH_SIZE >= imageContainers.length
     ) {
-      console.log('æº–å‚™è¼‰å…¥æ–°é é¢:', currentPage + 1);
-      console.log('ç•¶å‰ç‹€æ…‹:', {
-        currentBatchIndex,
-        BATCH_SIZE,
-        totalContainers: imageContainers.length,
-        isLoadingBatch,
-        isLoadingPage,
-        hasMorePages
-      });
       loadNextPage();
     }
   }
 
   async function loadNextPage() {
     if (isLoadingPage || !hasMorePages) {
-      console.log('loadNextPage è¢«é˜»æ­¢:', { isLoadingPage, hasMorePages });
       return;
     }
     
     isLoadingPage = true;
     showBatchLoading();
-    console.log('é–‹å§‹è¼‰å…¥é é¢:', currentPage + 1);
     
     try {
       currentPage++;
@@ -497,15 +465,12 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log('Fetch URL:', url);
       const response = await fetch(url);
       const html = await response.text();
-      console.log('å›žæ‡‰é•·åº¦:', html.length);
       
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
       const newContainers = doc.querySelectorAll('.grid-wrapper > div');
-      console.log('æ‰¾åˆ°æ–°å®¹å™¨æ•¸é‡:', newContainers.length);
       
       if (newContainers.length === 0) {
-        console.log('æ²’æœ‰æ›´å¤šé é¢äº†');
         hasMorePages = false;
         hideBatchLoading();
         isLoadingPage = false;
@@ -521,7 +486,6 @@ document.addEventListener("DOMContentLoaded", function () {
         newElements.push(clonedContainer);
       });
       
-      // å…ˆè½‰æ› Tumblr åœ–ç‰‡æ ¼å¼
       newElements.forEach(el => {
         const imageContainer = el.querySelector('.image-container');
         if (imageContainer) {
@@ -532,10 +496,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
       
-      // æ›´æ–° imageContainers
       imageContainers = document.querySelectorAll('.grid-wrapper > div');
       
-      // è¼‰å…¥æ–°å…ƒç´ çš„åœ–ç‰‡
       let loadedCount = 0;
       const totalNew = newElements.length;
       
@@ -547,11 +509,9 @@ document.addEventListener("DOMContentLoaded", function () {
             isLoadingPage = false;
             hideBatchLoading();
             
-            // ç‚ºæ–°å…ƒç´ è¨­å®šäº’å‹•åŠŸèƒ½
             newElements.forEach(el => {
               setupHoverEffectForContainer(el);
               
-              // è¨­å®š gallery æŽ§åˆ¶é …
               const imageContainer = el.querySelector('.image-container[data-gallery]');
               if (imageContainer) {
                 setupGalleryControlsForContainer(imageContainer);
@@ -559,7 +519,6 @@ document.addEventListener("DOMContentLoaded", function () {
               }
             });
             
-            // é‡æ–°è¨­å®šæ‰€æœ‰æŒ‰éˆ•çš„äº‹ä»¶ç›£è½å™¨
             setupShareButtons();
             setupLinkButtons();
             setupLikeButton();
@@ -570,7 +529,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
       
     } catch (error) {
-      console.error('è¼‰å…¥ä¸‹ä¸€é å¤±æ•—:', error);
       hasMorePages = false;
       isLoadingPage = false;
       hideBatchLoading();
@@ -585,12 +543,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const socialBtn = shareBtn.parentElement.querySelector(".social-btn");
     const shareBtnIcon = shareBtn.querySelector("i");
     if (!socialBtn) {
-      console.warn("æ‰¾ä¸åˆ° .social-btn å…ƒç´ ");
       return;
     }
     const socialIcons = socialBtn.querySelectorAll("i, a");
     if (socialIcons.length === 0) {
-      console.warn("æ‰¾ä¸åˆ°ç¤¾äº¤æŒ‰éˆ•åœ–ç¤º");
       return;
     }
     const isActive = shareBtnIcon.classList.contains("ri-share-fill");
@@ -794,10 +750,8 @@ document.addEventListener("DOMContentLoaded", function () {
       overlay = createImageOverlay();
     }
     
-    // 禁用 ScrollTrigger 避免 position:fixed 導致的佈局變化觸發動畫
     ScrollTrigger.getAll().forEach(trigger => trigger.disable());
     
-    // 保存當前滾動位置
     const scrollY = window.scrollY;
     document.body.style.top = `-${scrollY}px`;
     document.body.classList.add("no-scroll");
@@ -805,7 +759,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const overlayContent = overlay.querySelector(".overlay-content");
     overlayContent.innerHTML = "";
     
-    // 尋找畫廊容器：可能是子元素，也可能是容器本身
     let imageContainer = container.querySelector(".image-container[data-gallery]");
     if (!imageContainer && container.classList.contains("image-container") && container.hasAttribute("data-gallery")) {
       imageContainer = container;
@@ -823,7 +776,6 @@ document.addEventListener("DOMContentLoaded", function () {
           overlayContent.appendChild(img);
         });
       } else {
-        console.warn('無效的 gallery 資料');
         return;
       }
     } else {
@@ -884,20 +836,16 @@ document.addEventListener("DOMContentLoaded", function () {
       onComplete: () => {
         overlay.style.display = "none";
         
-        // 保存滾動位置
         const scrollY = document.body.style.top;
         const scrollPos = parseInt(scrollY || '0') * -1;
         
-        // 先移除樣式，再移除類別
         document.body.style.position = '';
         document.body.style.top = '';
         document.body.style.width = '';
         document.body.classList.remove("no-scroll");
         
-        // 立即恢復滾動位置
         window.scrollTo(0, scrollPos);
         
-        // 重新啟用 ScrollTrigger 並刷新
         ScrollTrigger.getAll().forEach(trigger => trigger.enable());
         ScrollTrigger.refresh();
       },
@@ -939,7 +887,6 @@ document.addEventListener("DOMContentLoaded", function () {
       container._overlaySetup = true;
       
       container.addEventListener("click", (e) => {
-        // 檢查是否點擊了不該觸發 overlay 的元素
         if (
           e.target.closest(".gallery-btn") ||
           e.target.closest(".gallery-prev") ||
@@ -1104,18 +1051,10 @@ document.addEventListener("DOMContentLoaded", function () {
       loadBatch(currentBatchIndex);
     }
   };
-  window.setBatchSize = function (newSize) {
-    if (newSize > 0) {
-      console.log(
-        `ç•¶å‰æ‰¹æ¬¡å¤§å°ï¼š${BATCH_SIZE}ï¼Œå¦‚éœ€ä¿®æ”¹è«‹åœ¨è…³æœ¬é ‚éƒ¨ä¿®æ”¹ BATCH_SIZE è®Šæ•¸`
-      );
-    }
-  };
   function convertTumblrImageStructure(container) {
     const images = container.querySelectorAll(".post_media_photo_anchor");
 
     if (images.length === 0) {
-      console.warn("æ²’æœ‰æ‰¾åˆ°åœ–ç‰‡");
       return container;
     }
 
@@ -1162,10 +1101,8 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
       
-      // 過濾掉空值和重複項
       const cleanUrls = [...new Set(galleryUrls.filter(url => url && url.trim()))];
       if (cleanUrls.length === 0) {
-        console.warn("沒有有效的圖片 URL");
         return container;
       }
 
@@ -1198,10 +1135,8 @@ document.addEventListener("DOMContentLoaded", function () {
       
       container.insertBefore(newImg, container.firstChild);
       
-      // 移除所有舊的圖片元素
       images.forEach((anchor) => anchor.remove());
       
-      // 為舊版 photoset 創建畫廊控制元素
       const galleryInfo = document.createElement("div");
       galleryInfo.className = "gallery-info";
       galleryInfo.innerHTML = `
