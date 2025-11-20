@@ -788,6 +788,9 @@ document.addEventListener("DOMContentLoaded", function () {
       overlay = createImageOverlay();
     }
     
+    // 禁用 ScrollTrigger 避免 position:fixed 導致的佈局變化觸發動畫
+    ScrollTrigger.getAll().forEach(trigger => trigger.disable());
+    
     // 保存當前滾動位置
     const scrollY = window.scrollY;
     document.body.style.top = `-${scrollY}px`;
@@ -887,6 +890,10 @@ document.addEventListener("DOMContentLoaded", function () {
         
         // 立即恢復滾動位置
         window.scrollTo(0, scrollPos);
+        
+        // 重新啟用 ScrollTrigger 並刷新
+        ScrollTrigger.getAll().forEach(trigger => trigger.enable());
+        ScrollTrigger.refresh();
       },
     });
   }
