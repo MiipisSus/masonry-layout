@@ -1264,6 +1264,17 @@ document.addEventListener("DOMContentLoaded", function () {
   function initializeApp() {
     showPageLoading();
 
+    // 清理 photoset 容器，只保留第一張圖片
+    document.querySelectorAll('.photoset-container').forEach(container => {
+      const images = container.querySelectorAll('.gallery-image');
+      if (images.length > 1) {
+        // 保留第一張，移除其他
+        for (let i = 1; i < images.length; i++) {
+          images[i].remove();
+        }
+      }
+    });
+
     convertAllImageContainers();
 
     imageContainers.forEach((container, index) => {
