@@ -7,123 +7,10 @@ document.addEventListener("DOMContentLoaded", function () {
   let scrollTimeout;
   let imageContainers = document.querySelectorAll(".grid-wrapper > div");
   
-  // Tumblr 分頁系統變數
+  // Tumblr åˆ†é ç³»çµ±è®Šæ•¸
   let currentPage = 1;
   let isLoadingPage = false;
   let hasMorePages = true;
-  
-  // 瀑布流佈局變數
-  let columnHeights = [];
-  let columnCount = 1;
-  let columnWidth = 0;
-  let gap = 40; // 2.5rem = 40px
-  
-  // 計算欄位數量
-  function getColumnCount() {
-    const width = window.innerWidth;
-    if (width >= 1920) return 3;
-    if (width >= 960) return 3;
-    if (width >= 769) return 2;
-    if (width >= 481) return 2;
-    return 1;
-  }
-  
-  // 初始化瀑布流佈局
-  function initMasonryLayout(reset = false) {
-    const gridWrapper = document.querySelector('.grid-wrapper');
-    if (!gridWrapper) return;
-    
-    columnCount = getColumnCount();
-    const containerWidth = gridWrapper.offsetWidth;
-    columnWidth = (containerWidth - gap * (columnCount - 1)) / columnCount;
-    
-    // 只在重置或首次初始化時清空高度
-    if (reset || columnHeights.length === 0) {
-      columnHeights = new Array(columnCount).fill(0);
-    }
-  }
-  
-  // 計算並設置元素位置
-  function positionElement(element) {
-    if (!element || element.style.display === 'none') return;
-    
-    // 找到最短的欄位
-    let minHeight = Math.min(...columnHeights);
-    let minIndex = columnHeights.indexOf(minHeight);
-    
-    // 計算位置
-    const left = minIndex * (columnWidth + gap);
-    const top = minHeight;
-    
-    // 設置位置和寬度
-    element.style.width = `${columnWidth}px`;
-    element.style.left = `${left}px`;
-    element.style.top = `${top}px`;
-    
-    // 獲取元素實際高度(同步)
-    const elementHeight = element.offsetHeight;
-    
-    console.log('定位元素:', {
-      element: element.querySelector('img')?.src?.substring(0, 50),
-      columnIndex: minIndex,
-      top: top,
-      height: elementHeight,
-      columnHeightsBefore: [...columnHeights]
-    });
-    
-    // 更新該欄位高度
-    columnHeights[minIndex] += elementHeight + gap;
-    
-    console.log('更新後 columnHeights:', [...columnHeights]);
-    
-    // 更新容器總高度
-    const gridWrapper = document.querySelector('.grid-wrapper');
-    if (gridWrapper) {
-      gridWrapper.style.height = `${Math.max(...columnHeights)}px`;
-    }
-  }
-  
-  // 重新計算所有元素位置
-  function relayoutMasonry() {
-    initMasonryLayout(true); // 完全重置
-    const containers = document.querySelectorAll('.grid-wrapper > div');
-    containers.forEach(container => {
-      if (container.classList.contains('loaded') || container.style.display !== 'none') {
-        positionElement(container);
-      }
-    });
-  }
-  
-  // 監聽視窗大小變化
-  let resizeTimeout;
-  window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-      const newColumnCount = getColumnCount();
-      // 只有當欄位數量改變時才完全重新排版
-      if (newColumnCount !== columnCount) {
-        relayoutMasonry();
-      } else {
-        // 欄位數量沒變,只更新寬度
-        const gridWrapper = document.querySelector('.grid-wrapper');
-        if (gridWrapper) {
-          const containerWidth = gridWrapper.offsetWidth;
-          columnWidth = (containerWidth - gap * (columnCount - 1)) / columnCount;
-          // 更新所有元素的寬度和左側位置
-          const containers = document.querySelectorAll('.grid-wrapper > div');
-          containers.forEach(container => {
-            if (container.style.display !== 'none') {
-              const left = parseFloat(container.style.left);
-              const columnIndex = Math.round(left / (columnWidth + gap));
-              container.style.width = `${columnWidth}px`;
-              container.style.left = `${columnIndex * (columnWidth + gap)}px`;
-            }
-          });
-        }
-      }
-      ScrollTrigger.refresh();
-    }, 250);
-  });
   function showPageLoading() {
     const loadingOverlay = document.createElement("div");
     loadingOverlay.id = "page-loading";
@@ -210,6 +97,24 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
   function setupAllButtonHoverEffects() {}
+  
+  // 清理並解析 data-gallery JSON
+  function parseGalleryData(galleryDataString) {
+    if (!galleryDataString) return null;
+    try {
+      // 修復 Tumblr 模板可能產生的 JSON 錯誤：
+      // 1. 移除多餘的逗號和空格：["url1","url2", ] -> ["url1","url2"]
+      // 2. 修復缺少逗號：["url1""url2"] -> ["url1","url2"]
+      let cleaned = galleryDataString
+        .replace(/,\s*]/g, ']')  // 移除結尾逗號
+        .replace(/"\s*"/g, '","');  // 修復缺少的逗號
+      return JSON.parse(cleaned);
+    } catch (e) {
+      console.error('解析 gallery 資料失敗:', galleryDataString, e);
+      return null;
+    }
+  }
+  
   function loadImage(container, onComplete) {
     const img = container.querySelector("img");
     if (img && img.dataset.src) {
@@ -234,125 +139,30 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
   function showBatch(containers) {
-    // 確保佈局已初始化(但不重置欄位高度)
-    if (columnHeights.length === 0) {
-      initMasonryLayout(false);
-    }
-    
-    // 先處理所有 gallery 容器的初始化
-    let galleryInitCount = 0;
-    const galleriesToInit = [];
-    
-    containers.forEach(container => {
-      const galleryContainer = container.querySelector(".image-container[data-gallery]");
-      if (galleryContainer) {
-        galleriesToInit.push({ container, galleryContainer });
-      }
-    });
-    
-    // 如果有 gallery 需要初始化,先初始化它們
-    if (galleriesToInit.length > 0) {
-      galleriesToInit.forEach(({ container, galleryContainer }) => {
-        const img = galleryContainer.querySelector(".gallery-image");
-        if (img && img.src) {
-          const tempImg = new Image();
-          tempImg.onload = () => {
-            const aspectRatio = tempImg.naturalHeight / tempImg.naturalWidth;
-            const paddingBottom = aspectRatio * 100 + "%";
-            galleryContainer.style.setProperty("--gallery-padding-bottom", paddingBottom);
-            
-            galleryInitCount++;
-            if (galleryInitCount === galleriesToInit.length) {
-              // 所有 gallery 都初始化完成,開始顯示批次
-              displayBatch(containers);
-            }
-          };
-          tempImg.onerror = () => {
-            galleryInitCount++;
-            if (galleryInitCount === galleriesToInit.length) {
-              displayBatch(containers);
-            }
-          };
-          tempImg.src = img.src;
-        } else {
-          galleryInitCount++;
-          if (galleryInitCount === galleriesToInit.length) {
-            displayBatch(containers);
-          }
-        }
-      });
-    } else {
-      // 沒有 gallery,直接顯示
-      displayBatch(containers);
-    }
-  }
-  
-  function displayBatch(containers) {
-    console.log('=== displayBatch 開始 ===', {
-      containerCount: containers.length,
-      columnHeights: [...columnHeights]
-    });
-    
     containers.forEach((container, index) => {
       container.style.display = "block";
       container.classList.add("batch-reveal");
-      
-      setupMainContentAnimation(container);
-      setupHoverEffectForContainer(container);
-      const galleryContainer = container.querySelector(
-        ".image-container[data-gallery]"
-      );
-      if (galleryContainer) {
-        initializeGalleryContainer(galleryContainer);
-        setupGalleryControlsForContainer(galleryContainer);
-      }
+      setTimeout(() => {
+        setupMainContentAnimation(container);
+        setupHoverEffectForContainer(container);
+        const galleryContainer = container.querySelector(
+          ".image-container[data-gallery]"
+        );
+        if (galleryContainer) {
+          initializeGalleryContainer(galleryContainer);
+          setupGalleryControlsForContainer(galleryContainer);
+        }
+      }, index * 10);
     });
-    
-    // 等待所有元素渲染完成後再進行定位
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        console.log('開始定位元素, columnHeights:', [...columnHeights]);
-        
-        containers.forEach((container) => {
-          positionElement(container);
-        });
-        
-        console.log('=== displayBatch 定位完成 ===');
-        
-        // 設置其他功能
-        setTimeout(() => {
-          setupAllButtonHoverEffects();
-          setupShareButtons();
-          setupLinkButtons();
-          setupLikeButton();
-          setupImageOverlayClick();
-          processLikeStatusForBatch(containers);
-          
-          console.log('ScrollTrigger.refresh 之前, columnHeights:', [...columnHeights]);
-          
-          // 先刷新 ScrollTrigger
-          ScrollTrigger.refresh();
-          
-          console.log('ScrollTrigger.refresh 之後, columnHeights:', [...columnHeights]);
-          
-          // 刷新後可能導致高度變化,延遲一點再重新檢查佈局
-          setTimeout(() => {
-            // 檢查容器高度是否正確
-            const gridWrapper = document.querySelector('.grid-wrapper');
-            const maxHeight = Math.max(...columnHeights);
-            const currentHeight = parseInt(gridWrapper.style.height) || 0;
-            
-            console.log('檢查高度:', { maxHeight, currentHeight, diff: Math.abs(maxHeight - currentHeight) });
-            
-            // 如果高度差異太大,重新排版
-            if (Math.abs(maxHeight - currentHeight) > 10) {
-              console.log('高度差異過大,重新排版');
-              relayoutMasonry();
-            }
-          }, 200);
-        }, 100);
-      });
-    });
+    setTimeout(() => {
+      setupAllButtonHoverEffects();
+      setupShareButtons();
+      setupLinkButtons();
+      setupLikeButton();
+      setupImageOverlayClick();
+      processLikeStatusForBatch(containers);
+      ScrollTrigger.refresh();
+    }, containers.length * 10 + 100);
   }
   function loadBatch(batchIndex) {
     if (isLoadingBatch) return;
@@ -540,7 +350,12 @@ document.addEventListener("DOMContentLoaded", function () {
       );
   }
   function changeGalleryImage(container, direction) {
-    const gallery = JSON.parse(container.dataset.gallery);
+    const gallery = parseGalleryData(container.dataset.gallery);
+    if (!gallery) {
+      console.error('無法解析 gallery 資料');
+      return;
+    }
+    
     let currentIndex = parseInt(container.dataset.currentIndex);
     currentIndex += direction;
     if (currentIndex < 0) {
@@ -550,21 +365,34 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     container.dataset.currentIndex = currentIndex;
     updateGalleryCounter(container, currentIndex, gallery.length);
+    
     const currentImg = container.querySelector(".gallery-image");
+    if (!currentImg) {
+      console.warn('找不到當前圖片');
+      return;
+    }
+    
     const slideDirection = direction > 0 ? 1 : -1;
     const parentContainer = container.closest(".grid-wrapper > div");
-    const isHovered =
-      parentContainer && isContainerInHoverState(parentContainer);
-    const newImg = createNewGalleryImage(
-      gallery[currentIndex],
-      slideDirection,
-      isHovered
-    );
-    gsap.set(currentImg, { zIndex: 0 });
-    container.appendChild(newImg);
+    const isHovered = parentContainer && isContainerInHoverState(parentContainer);
+    
+    // 預載圖片
     const tempImg = new Image();
     tempImg.onload = () => {
+      // 不改變容器高度，保持第一張圖片設定的高度
+      const newImg = createNewGalleryImage(
+        gallery[currentIndex],
+        slideDirection,
+        isHovered
+      );
+      
+      gsap.set(currentImg, { zIndex: 0 });
+      container.appendChild(newImg);
+      
       animateGalleryTransition(currentImg, newImg, slideDirection);
+    };
+    tempImg.onerror = () => {
+      console.error('圖片載入失敗:', gallery[currentIndex]);
     };
     tempImg.src = gallery[currentIndex];
   }
@@ -574,8 +402,14 @@ document.addEventListener("DOMContentLoaded", function () {
     if (prevBtn && nextBtn) {
       prevBtn.removeEventListener("click", prevBtn._clickHandler);
       nextBtn.removeEventListener("click", nextBtn._clickHandler);
-      prevBtn._clickHandler = () => changeGalleryImage(container, -1);
-      nextBtn._clickHandler = () => changeGalleryImage(container, 1);
+      prevBtn._clickHandler = (e) => {
+        e.stopPropagation();
+        changeGalleryImage(container, -1);
+      };
+      nextBtn._clickHandler = (e) => {
+        e.stopPropagation();
+        changeGalleryImage(container, 1);
+      };
       prevBtn.addEventListener("click", prevBtn._clickHandler);
       nextBtn.addEventListener("click", nextBtn._clickHandler);
     }
@@ -592,16 +426,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const scrollPosition = window.scrollY + window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
     
-    // 檢查是否需要載入已存在的批次
+    // æª¢æŸ¥æ˜¯å¦éœ€è¦è¼‰å…¥å·²å­˜åœ¨çš„æ‰¹æ¬¡
     if (
       scrollPosition >= documentHeight - SCROLL_THRESHOLD &&
       !isLoadingBatch &&
       currentBatchIndex * BATCH_SIZE < imageContainers.length
     ) {
-      console.log('載入批次:', currentBatchIndex);
+      console.log('è¼‰å…¥æ‰¹æ¬¡:', currentBatchIndex);
       loadBatch(currentBatchIndex);
     }
-    // 檢查是否需要載入新頁面
+    // æª¢æŸ¥æ˜¯å¦éœ€è¦è¼‰å…¥æ–°é é¢
     else if (
       scrollPosition >= documentHeight - SCROLL_THRESHOLD &&
       !isLoadingBatch &&
@@ -609,8 +443,8 @@ document.addEventListener("DOMContentLoaded", function () {
       hasMorePages &&
       currentBatchIndex * BATCH_SIZE >= imageContainers.length
     ) {
-      console.log('準備載入新頁面:', currentPage + 1);
-      console.log('當前狀態:', {
+      console.log('æº–å‚™è¼‰å…¥æ–°é é¢:', currentPage + 1);
+      console.log('ç•¶å‰ç‹€æ…‹:', {
         currentBatchIndex,
         BATCH_SIZE,
         totalContainers: imageContainers.length,
@@ -624,13 +458,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   async function loadNextPage() {
     if (isLoadingPage || !hasMorePages) {
-      console.log('loadNextPage 被阻止:', { isLoadingPage, hasMorePages });
+      console.log('loadNextPage è¢«é˜»æ­¢:', { isLoadingPage, hasMorePages });
       return;
     }
     
     isLoadingPage = true;
     showBatchLoading();
-    console.log('開始載入頁面:', currentPage + 1);
+    console.log('é–‹å§‹è¼‰å…¥é é¢:', currentPage + 1);
     
     try {
       currentPage++;
@@ -638,15 +472,15 @@ document.addEventListener("DOMContentLoaded", function () {
       console.log('Fetch URL:', url);
       const response = await fetch(url);
       const html = await response.text();
-      console.log('回應長度:', html.length);
+      console.log('å›žæ‡‰é•·åº¦:', html.length);
       
       const parser = new DOMParser();
       const doc = parser.parseFromString(html, 'text/html');
       const newContainers = doc.querySelectorAll('.grid-wrapper > div');
-      console.log('找到新容器數量:', newContainers.length);
+      console.log('æ‰¾åˆ°æ–°å®¹å™¨æ•¸é‡:', newContainers.length);
       
       if (newContainers.length === 0) {
-        console.log('沒有更多頁面了');
+        console.log('æ²’æœ‰æ›´å¤šé é¢äº†');
         hasMorePages = false;
         hideBatchLoading();
         isLoadingPage = false;
@@ -662,7 +496,7 @@ document.addEventListener("DOMContentLoaded", function () {
         newElements.push(clonedContainer);
       });
       
-      // 先轉換 Tumblr 圖片格式
+      // å…ˆè½‰æ› Tumblr åœ–ç‰‡æ ¼å¼
       newElements.forEach(el => {
         const imageContainer = el.querySelector('.image-container');
         if (imageContainer) {
@@ -673,34 +507,45 @@ document.addEventListener("DOMContentLoaded", function () {
         }
       });
       
-      // 更新 imageContainers
+      // æ›´æ–° imageContainers
       imageContainers = document.querySelectorAll('.grid-wrapper > div');
       
-      console.log('新元素已加入,準備載入圖片');
+      // è¼‰å…¥æ–°å…ƒç´ çš„åœ–ç‰‡
+      let loadedCount = 0;
+      const totalNew = newElements.length;
       
-      // 載入新元素的圖片(設置為隱藏狀態,等待批次載入)
       newElements.forEach(container => {
-        container.style.display = 'none';
-        container.classList.add('loading');
-        
-        const img = container.querySelector('img');
-        if (img && !img.dataset.src) {
-          img.dataset.src = img.src;
-          img.src = '';
-        }
+        loadImage(container, () => {
+          loadedCount++;
+          if (loadedCount === totalNew) {
+            showBatch(newElements);
+            isLoadingPage = false;
+            hideBatchLoading();
+            
+            // ç‚ºæ–°å…ƒç´ è¨­å®šäº’å‹•åŠŸèƒ½
+            newElements.forEach(el => {
+              setupHoverEffectForContainer(el);
+              
+              // è¨­å®š gallery æŽ§åˆ¶é …
+              const imageContainer = el.querySelector('.image-container[data-gallery]');
+              if (imageContainer) {
+                setupGalleryControlsForContainer(imageContainer);
+                initializeGalleryContainer(imageContainer);
+              }
+            });
+            
+            // é‡æ–°è¨­å®šæ‰€æœ‰æŒ‰éˆ•çš„äº‹ä»¶ç›£è½å™¨
+            setupShareButtons();
+            setupLinkButtons();
+            setupLikeButton();
+            
+            ScrollTrigger.refresh();
+          }
+        });
       });
       
-      isLoadingPage = false;
-      hideBatchLoading();
-      
-      console.log('新頁面載入完成,等待批次載入系統處理');
-      
-      // 不要立即顯示,讓批次載入系統自動處理
-      // 觸發一次滾動檢查
-      handleScroll();
-      
     } catch (error) {
-      console.error('載入下一頁失敗:', error);
+      console.error('è¼‰å…¥ä¸‹ä¸€é å¤±æ•—:', error);
       hasMorePages = false;
       isLoadingPage = false;
       hideBatchLoading();
@@ -715,12 +560,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const socialBtn = shareBtn.parentElement.querySelector(".social-btn");
     const shareBtnIcon = shareBtn.querySelector("i");
     if (!socialBtn) {
-      console.warn("找不到 .social-btn 元素");
+      console.warn("æ‰¾ä¸åˆ° .social-btn å…ƒç´ ");
       return;
     }
     const socialIcons = socialBtn.querySelectorAll("i, a");
     if (socialIcons.length === 0) {
-      console.warn("找不到社交按鈕圖示");
+      console.warn("æ‰¾ä¸åˆ°ç¤¾äº¤æŒ‰éˆ•åœ–ç¤º");
       return;
     }
     const isActive = shareBtnIcon.classList.contains("ri-share-fill");
@@ -1191,7 +1036,7 @@ document.addEventListener("DOMContentLoaded", function () {
   window.setBatchSize = function (newSize) {
     if (newSize > 0) {
       console.log(
-        `當前批次大小：${BATCH_SIZE}，如需修改請在腳本頂部修改 BATCH_SIZE 變數`
+        `ç•¶å‰æ‰¹æ¬¡å¤§å°ï¼š${BATCH_SIZE}ï¼Œå¦‚éœ€ä¿®æ”¹è«‹åœ¨è…³æœ¬é ‚éƒ¨ä¿®æ”¹ BATCH_SIZE è®Šæ•¸`
       );
     }
   };
@@ -1199,7 +1044,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const images = container.querySelectorAll(".post_media_photo_anchor");
 
     if (images.length === 0) {
-      console.warn("沒有找到圖片");
+      console.warn("æ²’æœ‰æ‰¾åˆ°åœ–ç‰‡");
       return container;
     }
 
@@ -1245,9 +1090,17 @@ document.addEventListener("DOMContentLoaded", function () {
           galleryUrls.push(imageUrl);
         }
       });
+      
+      // 過濾掉空值和重複項
+      const cleanUrls = [...new Set(galleryUrls.filter(url => url && url.trim()))];
+      if (cleanUrls.length === 0) {
+        console.warn("沒有有效的圖片 URL");
+        return container;
+      }
 
-      container.setAttribute("data-gallery", JSON.stringify(galleryUrls));
+      container.setAttribute("data-gallery", JSON.stringify(cleanUrls));
       container.setAttribute("data-current-index", "0");
+      
       const firstImg = images[0].querySelector(".post_media_photo");
       const newImg = document.createElement("img");
       newImg.className = "gallery-image";
@@ -1257,7 +1110,8 @@ document.addEventListener("DOMContentLoaded", function () {
       const firstDataSrc = firstImg.getAttribute("data-src");
 
       newImg.src = firstBigPhotoSrc || firstOriginalSrc || firstDataSrc;
-      newImg.alt = firstImg.getAttribute("alt") || "";
+      newImg.alt = firstImg.getAttribute("alt") || "Gallery image";
+      newImg.setAttribute("data-src", firstBigPhotoSrc || firstOriginalSrc || firstDataSrc);
 
       const originalStyle = firstImg.getAttribute("style");
       if (originalStyle && originalStyle.includes("aspect-ratio")) {
@@ -1270,7 +1124,28 @@ document.addEventListener("DOMContentLoaded", function () {
           newImg.style.transform = "translate(0px)";
         }
       }
+      
       container.insertBefore(newImg, container.firstChild);
+      
+      // 移除所有舊的圖片元素
+      images.forEach((anchor) => anchor.remove());
+      
+      // 為舊版 photoset 創建畫廊控制元素
+      const galleryInfo = document.createElement("div");
+      galleryInfo.className = "gallery-info";
+      galleryInfo.innerHTML = `
+        <i class="ri-image-2-line"></i>
+        <span class="gallery-counter">1 / ${cleanUrls.length}</span>
+      `;
+      container.appendChild(galleryInfo);
+
+      const galleryBtn = document.createElement("div");
+      galleryBtn.className = "gallery-btn";
+      galleryBtn.innerHTML = `
+        <i class="ri-arrow-left-s-line gallery-prev"></i>
+        <i class="ri-arrow-right-s-line gallery-next"></i>
+      `;
+      container.appendChild(galleryBtn);
     }
 
     const innerP = container.querySelector("p");
@@ -1399,10 +1274,6 @@ document.addEventListener("DOMContentLoaded", function () {
       scrollTimeout = setTimeout(handleScroll, 100);
     });
     document.addEventListener("mousemove", trackMousePosition);
-    
-    // 初始化瀑布流佈局(首次完全重置)
-    initMasonryLayout(true);
-    
     loadBatch(0);
     setupHoverEffects();
     setupGalleryControls();

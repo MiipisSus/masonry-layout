@@ -405,15 +405,21 @@ a {
 .grid-wrapper {
   list-style: none;
   width: 100%;
-  position: relative;
+  column-count: 1;
+  column-gap: 2.5rem;
   margin: 0 auto;
   padding: 0;
 
   > div {
-    position: absolute;
     display: block;
+    width: 100%;
+    margin-block: 2.5rem;
+    break-inside: avoid;
     color: var(--grey);
-    transition: transform 0.3s ease, opacity 0.3s ease;
+
+    &:first-child {
+      margin-top: 0;
+    }
   }
 
   img {
@@ -870,6 +876,10 @@ a {
 
 /* 小手機 (≤480px) */
 @media (max-width: 480px) {
+  .grid-wrapper {
+    column-count: 1;
+  }
+
   .image-container .gallery-btn,
   .image-container .interact-btn {
     gap: 6px;
@@ -913,6 +923,10 @@ a {
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
+  .grid-wrapper {
+    column-count: 2;
+  }
+
   .image-container .gallery-btn,
   .image-container .interact-btn {
     gap: 8px;
@@ -930,18 +944,30 @@ a {
 }
 
 @media (min-width: 769px) and (max-width: 959px) {
+  .grid-wrapper {
+    column-count: 2;
+  }
+
   .post-info .tag {
     font-size: 0.7rem;
   }
 }
 
 @media (min-width: 960px) and (max-width: 1919px) {
+  .grid-wrapper {
+    column-count: 3;
+  }
+
   .post-info .tag {
     font-size: 0.75rem;
   }
 }
 
 @media (min-width: 1920px) {
+  .grid-wrapper {
+    column-count: 3;
+  }
+
   .post-info .tag {
     font-size: 0.8rem;
   }
@@ -1222,7 +1248,7 @@ a {
     <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.13.0/ScrollTrigger.min.js"></script>
-    <script src="https://static.tumblr.com/lakrccy/QBot5yhb4/scripts.js"></script>
+    <script src="https://static.tumblr.com/lakrccy/v0Gt5yqmv/scripts.js"></script>
 </body>
 
 </html>
