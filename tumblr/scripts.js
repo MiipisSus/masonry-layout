@@ -442,6 +442,12 @@ document.addEventListener("DOMContentLoaded", function () {
       });
   }
   function handleScroll() {
+    // 如果 overlay 打開或 body 被鎖定，不執行滾動加載
+    const overlay = document.querySelector(".image-overlay");
+    if ((overlay && overlay.style.display === "flex") || document.body.classList.contains("no-scroll")) {
+      return;
+    }
+    
     const scrollPosition = window.scrollY + window.innerHeight;
     const documentHeight = document.documentElement.scrollHeight;
     
